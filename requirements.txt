@@ -1,0 +1,2 @@
+# httplib2 and uritemplate will be installed with google api - do I need to list them in requirements as well?
+google-api-python-client==2.148.0
