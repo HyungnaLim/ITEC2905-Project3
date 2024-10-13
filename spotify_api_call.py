@@ -1,6 +1,5 @@
 import requests
 
-
 def get_token():
     # TODO: set client credentials as environment variables
     client_id = '0c5ba66cb29e46e8a415a35c19033bdd'
@@ -19,11 +18,10 @@ def get_token():
     return auth
 
 
-def get_artist_id(auth):
+def get_artist_info(auth, search_artist):
     endpoint = 'https://api.spotify.com/v1/search'
-    artist = input('Enter artist name: ')
 
-    search_query = {'q': artist, 'type': 'artist', 'limit': 3}
+    search_query = {'q': search_artist, 'type': 'artist', 'limit': 3}
 
     search_response = requests.get(endpoint, params=search_query, headers=auth).json()
 
@@ -32,50 +30,51 @@ def get_artist_id(auth):
     artist_genres = search_response['artists']['items'][0]['genres']
     artist_image_url = search_response['artists']['items'][0]['images'][0]['url']
 
-    print(f'Searched artist is ... "{artist_name}"')
-    print(f'Genre: {', '.join(artist_genres)}')
-
-    return artist_name, artist_id, artist_image_url
+    return artist_name, artist_id, artist_genres, artist_image_url
 
 
 def get_top_tracks_by_artist_id(auth, artist_id):
     json_res = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks',
                                           headers=auth).json()
     tracks = json_res['tracks']
+
     track_collector = []
 
     for i, track in enumerate(tracks):
         if i >= 3:  # Stop after the third item
             break
-        track_title = track['name']
-        album_title = track['album']['name']
-        release_date = track['album']['release_date']
-        spotify_url = track['external_urls']['spotify']
 
-        track_collector.append(track_title)
-
-        print(f'{track_title} [{album_title}] {release_date} {spotify_url}')
+        track_dict = {'title': track['name'],
+                      'album': track['album']['name'],
+                      'release date': track['album']['release_date'],
+                      'spotify url': track['external_urls']['spotify']}
+        track_collector.append(track_dict)
 
     return track_collector
 
 
 class Spotify:
-    def __init__(self, artist, image):
+    def __init__(self, artist, image, genres, tracks):
         self.artist = artist
         self.image_url = image
-        self.tracks = []
+        self.genres = genres
+        self.tracks = tracks
+
+    def __str__(self):
+        tracks_str = ', '.join(self.tracks)
+        return f'{self.artist}, {self.image_url}, {self.genres}, {tracks_str}'
 
 
 
-def main():
+def main(search_artist):
     token = get_token()
-    Spotify.artist, artist_id, Spotify.image_url = get_artist_id(token)
-    Spotify.tracks = get_top_tracks_by_artist_id(token, artist_id)
+    name, id, img_url, genres = get_artist_info(token, search_artist)
+    tracks = get_top_tracks_by_artist_id(token, id)
 
+    artist_info = Spotify(name, img_url, genres, tracks)
 
+    return artist_info
 
-if __name__ == '__main__':
-    main()
 
 
 # TODO
