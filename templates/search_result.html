@@ -2,9 +2,15 @@
 {% block content %}
 
 
-<h1>{{ artist_info }} </h1> <!--Per the design, this will display the artists name -->
-<!-- artist_info will be getting called from App.py, this will need to be adjusted
-this will also need to match what is in get_user_info parameter-->
+<h1>{{ artist_name }} </h1>
+
+<p> <img src="{{artist_img }}"> </p>
+
+<p> Genres : {{ artist_genres }} </p>
+
+<p> Top Tracks of {{ artist_name }} : <br>
+{{ artist_tracks }}
+</p>
 
 
 <p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>

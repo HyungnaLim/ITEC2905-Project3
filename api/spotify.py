@@ -27,10 +27,10 @@ def get_artist_info(auth, search_artist):
 
     artist_name = search_response['artists']['items'][0]['name']
     artist_id = search_response['artists']['items'][0]['id']
-    artist_genres = search_response['artists']['items'][0]['genres']
     artist_image_url = search_response['artists']['items'][0]['images'][0]['url']
+    artist_genres = search_response['artists']['items'][0]['genres']
 
-    return artist_name, artist_id, artist_genres, artist_image_url
+    return artist_name, artist_id, artist_image_url, artist_genres
 
 
 def get_top_tracks_by_artist_id(auth, artist_id):
@@ -63,6 +63,9 @@ class Spotify:
     def __str__(self):
         return f'{self.artist}, {self.image_url}, {self.genres}, {self.tracks}'
 
+    def genres_str(self):
+        genres_formatted = ', '.join(self.genres)
+        return genres_formatted
 
 
 def main(search_artist):

@@ -17,7 +17,11 @@ def get_artist_info():
 
     artist_info = spotify.main(artist_name)
 
-    return render_template('search_result.html', artist_info=artist_info)
+    return render_template('search_result.html',
+                           artist_name=artist_info.artist,
+                           artist_img=artist_info.image_url,
+                           artist_genres=artist_info.genres_str(),
+                           artist_tracks=artist_info.tracks)
 
 
 if __name__ == '__main__':
