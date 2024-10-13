@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<h1>{{ artist_info }} </h1> <!--Per the design, this will display the artists name -->
+<!-- artist_info will be getting called from App.py, this will need to be adjusted
+this will also need to match what is in get_user_info parameter-->
+
+<p>Spotify API</p> <!-- TODO - populate Artist info/popular songs from Spotify API -->
+<!-- to add the keys from the APi's for each API call -->
+
+<p>Bandsintown API</p> <!-- TODO - populate Bandsintown API -->
+
+<p>Youtube API</p> <!-- TODO - populate YoutubeAPI and this is searched from Artistname -->
+
+
+<p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
+
+{% endblock %} <!-- this will copy the same style sheet for both pages -->
