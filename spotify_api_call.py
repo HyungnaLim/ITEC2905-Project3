@@ -25,12 +25,12 @@ def get_artist_info(auth, search_artist):
 
     search_response = requests.get(endpoint, params=search_query, headers=auth).json()
 
-    artist_name = search_response['artists']['items'][0]['name']
     artist_id = search_response['artists']['items'][0]['id']
-    artist_genres = search_response['artists']['items'][0]['genres']
+    artist_name = search_response['artists']['items'][0]['name']
     artist_image_url = search_response['artists']['items'][0]['images'][0]['url']
+    artist_genres = search_response['artists']['items'][0]['genres']
 
-    return artist_name, artist_id, artist_genres, artist_image_url
+    return artist_id, artist_name, artist_image_url, artist_genres
 
 
 def get_top_tracks_by_artist_id(auth, artist_id):
@@ -67,7 +67,7 @@ class Spotify:
 
 def main(search_artist):
     token = get_token()
-    name, id, img_url, genres = get_artist_info(token, search_artist)
+    id, name, img_url, genres = get_artist_info(token, search_artist)
     tracks = get_top_tracks_by_artist_id(token, id)
 
     artist_info = Spotify(name, img_url, genres, tracks)
