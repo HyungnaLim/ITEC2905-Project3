@@ -18,10 +18,3 @@ def get_artist_info():
 
 if __name__ == '__main__':
     app.run()
-
-# def main():
-#     artist_search = input('Enter artist name: ')
-#     spotify.main(artist_search)
-#
-# if __name__ == '__main__':
-#     main()
