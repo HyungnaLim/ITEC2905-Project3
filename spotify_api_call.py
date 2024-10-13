@@ -42,11 +42,21 @@ def get_top_tracks_by_artist_id(auth, artist_id):
     json_res = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks',
                                           headers=auth).json()
     tracks = json_res['tracks']
-    track_ids = []
-    for tracks in tracks:
-        track_ids.append(tracks['id'])
+    track_collector = []
 
-    return track_ids
+    for i, track in enumerate(tracks):
+        if i >= 3:  # Stop after the third item
+            break
+        track_title = track['name']
+        album_title = track['album']['name']
+        release_date = track['album']['release_date']
+        spotify_url = track['external_urls']['spotify']
+
+        track_collector.append(track_title)
+
+        print(f'{track_title} [{album_title}] {release_date} {spotify_url}')
+
+    return track_collector
 
 
 def get_track_info_by_track_id(auth, artist_name, track_ids):
@@ -82,8 +92,7 @@ class Spotify:
 def main():
     token = get_token()
     Spotify.artist, artist_id, Spotify.image_url = get_artist_id(token)
-    track_ids = get_top_tracks_by_artist_id(token, artist_id)
-    Spotify.tracks = get_track_info_by_track_id(token, Spotify.artist, track_ids)
+    Spotify.tracks = get_top_tracks_by_artist_id(token, artist_id)
 
 
 
