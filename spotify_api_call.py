@@ -50,6 +50,8 @@ def get_top_tracks_by_artist_id(auth, artist_id):
 def get_track_info_by_track_id(auth, artist_name, track_ids):
     print(f'\nTop Tracks of {artist_name}')
 
+    track_collector = []
+
     for track_id in track_ids:
         json_res = requests.get(f'https://api.spotify.com/v1/tracks/{track_id}', headers=auth).json()
 
@@ -58,15 +60,25 @@ def get_track_info_by_track_id(auth, artist_name, track_ids):
         release_date = json_res['album']['release_date']
         spotify_url = json_res['external_urls']['spotify']
 
-        print(track_title, album_title, release_date, spotify_url)
+        track_collector.append(track_title)
+
+        print(f'{track_title} [{album_title}] {release_date} {spotify_url}')
+
+    return track_collector
+
+
+class Spotify:
+    def __init__(self, artist):
+        self.artist = artist
+        self.tracks = []
 
 
 
 def main():
     token = get_token()
-    artist_name, artist_id = get_artist_id(token)
-    tracks = get_top_tracks_by_artist_id(token, artist_id)
-    get_track_info_by_track_id(token, artist_name, tracks)
+    Spotify.artist, artist_id = get_artist_id(token)
+    track_ids = get_top_tracks_by_artist_id(token, artist_id)
+    Spotify.tracks = get_track_info_by_track_id(token, Spotify.artist, track_ids)
 
 
 
