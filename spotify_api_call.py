@@ -63,6 +63,9 @@ class Spotify:
     def __str__(self):
         return f'{self.artist}, {self.image_url}, {self.genres}, {self.tracks}'
 
+    def genres_str(self):
+        genres_formatted = ', '.join(self.genres)
+        return genres_formatted
 
 
 def main(search_artist):
