@@ -61,8 +61,7 @@ class Spotify:
         self.tracks = tracks
 
     def __str__(self):
-        tracks_str = ', '.join(self.tracks)
-        return f'{self.artist}, {self.image_url}, {self.genres}, {tracks_str}'
+        return f'{self.artist}, {self.image_url}, {self.genres}, {self.tracks}'
 
 
 
