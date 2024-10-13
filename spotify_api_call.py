@@ -29,11 +29,13 @@ def get_artist_id(auth):
 
     artist_name = search_response['artists']['items'][0]['name']
     artist_id = search_response['artists']['items'][0]['id']
+    artist_genres = search_response['artists']['items'][0]['genres']
+    artist_image_url = search_response['artists']['items'][0]['images'][0]['url']
 
     print(f'Searched artist is ... "{artist_name}"')
-    # TODO: maybe display more artist info
+    print(f'Genre: {', '.join(artist_genres)}')
 
-    return artist_name, artist_id
+    return artist_name, artist_id, artist_image_url
 
 
 def get_top_tracks_by_artist_id(auth, artist_id):
@@ -71,15 +73,16 @@ def get_track_info_by_track_id(auth, artist_name, track_ids):
 
 
 class Spotify:
-    def __init__(self, artist):
+    def __init__(self, artist, image):
         self.artist = artist
+        self.image_url = image
         self.tracks = []
 
 
 
 def main():
     token = get_token()
-    Spotify.artist, artist_id = get_artist_id(token)
+    Spotify.artist, artist_id, Spotify.image_url = get_artist_id(token)
     track_ids = get_top_tracks_by_artist_id(token, artist_id)
     Spotify.tracks = get_track_info_by_track_id(token, Spotify.artist, track_ids)
 
