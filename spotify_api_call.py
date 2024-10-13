@@ -52,7 +52,10 @@ def get_track_info_by_track_id(auth, artist_name, track_ids):
 
     track_collector = []
 
-    for track_id in track_ids:
+    for i, track_id in enumerate(track_ids):
+        if i >= 3:  # Stop after the third item
+            break
+
         json_res = requests.get(f'https://api.spotify.com/v1/tracks/{track_id}', headers=auth).json()
 
         track_title = json_res['name']
