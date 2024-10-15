@@ -1,96 +1,63 @@
-"""Using Google API Client Library for Python:
-https://github.com/googleapis/google-api-python-client?tab=readme-ov-file
-
-User will need to have a Google account and create an api key here:
-https://console.cloud.google.com/apis/credentials
-
-Starting code from here:
-https://github.com/googleapis/google-api-python-client/blob/main/docs/start.md#build-the-service-object
-
-Index of modules and classes available to googleapiclient:
-https://googleapis.github.io/google-api-python-client/docs/epy/index.html
-
-take artist name and top 5 songs from spotify api module?
+"""
+Uses YouTube Data API to search for music videos by artist name in a given search term.
+Requires valid YouTube API token to authenticate the Google API client. Returns dictionary
+of video title and video ID.
 """
 
-# using build function from discovery module
-# https://googleapis.github.io/google-api-python-client/docs/epy/googleapiclient.discovery-module.html#build
 from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 import os
 
-# build() takes api service name and corresponding version args - we're using YouTube api services
-# https://github.com/googleapis/google-api-python-client/blob/main/docs/dyn/index.md#youtube
 service_name = 'youtube'
 service_version = 'v3'
+api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
+# name and version index for supported APIs
+api_name_version_index = 'https://github.com/googleapis/google-api-python-client/blob/main/docs/dyn/index.md#youtube'
 
-# for api requests, build() also takes developerKey arg which is the users API key
-# https://github.com/googleapis/google-api-python-client/blob/main/docs/api-keys.md
-api_key = os.environ.get('DEVELOPER_KEY')
+def youtube_video(search_term):
+    """ Search for music videos on YouTube by given search term
+    :param search_term:
+    :return dictionary of video title and video ID:
+    """
 
-test_search = 'Radiohead' # imported_search_query_from_user_or_spotify_data
-test_search_no_music_video = 'Radiohead Decks Dark' # how to distinguish video and music video if needed
-test_search2 = 'Radiohead Creep'
-test_search_top_5 = {'radiohead':['creep',      # sample data structure from spotify api??
-                                  'no surprises',
-                                  'karma police',
-                                  'high and dry',
-                                  'jigsaw falling into place'
-                                  ]}
-
-def main():     # testing
-    # youtube_video(test_search)
-    youtube_video(test_search2)
-    # youtube_video(test_search_no_music_video)
-    # youtube_video(test_search_top_5)
-
-def youtube_video(search):
     try:
         youtube = build(service_name, service_version, developerKey=api_key)
-
-        # search params are used in 'list' method after search()
-        # https://googleapis.github.io/google-api-python-client/docs/dyn/youtube_v3.search.html
         response = youtube.search().list(
-            part='snippet', # required
+            part='snippet',
             maxResults=1,
-            q=search + 'music video',
+            q=f'{search_term} music video',
             type='video',
-            videoCategoryId=10
+            videoCategoryId=10, # in US music video category is 10
+            fields='items(snippet/title),items(id/videoId)' # returns only specific data
         ).execute()
-
-        video_id = response['items'][0]['id']['videoId']
-
-        # direct_url = f'https://www.youtube.com/watch?v={video_id}'
-
-        # video = response['items'][0]    # refine to data needed
-        # print(video)
-
-        # title = video['snippet']['title']
-        # description = video['snippet']['description']
-        # thumb = video['snippet']['thumbnails']['high']['url']
-
-        # ids = 'Del3C2W63Pk'
-        video_description = youtube.videos().list(id=video_id, part='snippet').execute()
-        for data in video_description.get('items', []):
-            print(data['id'])
-            print(data['snippet']['description'])
-            print(data['snippet']['title'])
-            print()
-
-        # print(response)
-        # print(response['items'])
-        # print(response['items'][0])
-        # print(response['items'][0]['snippet'])
-        # print(response['items'][0]['snippet']['title']) # path to title
-        # print(response['items'][0]['snippet']['description'])   # path to desc
-        # print(response['items'])
-        # print(response['items'][0])
-        # print(response['items'][0]['id'])
-        # print(response['items'][0]['id']['videoId']) # path to video url id
-
         youtube.close()
-    except Exception as e:
-        print(e)
+
+        video_data = api_data_extraction(response)
+        return video_data
+
+    except (UnknownApiNameOrVersion, HttpError, Exception) as error:
+        match error:
+            case UnknownApiNameOrVersion():
+                print(f'Error unknown YouTube API name or version: {error}, supported APIs: {api_name_version_index}')
+            case HttpError():
+                print(f'Error YouTube response status code: {error.status_code}, reason: {error.error_details}')
+            case Exception():
+                print(f'YouTube API Error: {error}')
 
 
-if __name__ == '__main__':
-    main()
+def api_data_extraction(api_response_data):
+    try:
+        for data in api_response_data.get('items', []):
+            video_title = data['snippet']['title']
+            video_id = data['id']['videoId']
+
+            chosen_video = {'video_title': video_title, 'video_id': video_id}
+            return chosen_video
+
+    except (KeyError, Exception) as error:
+        match error:
+            case KeyError():
+                print(f'YouTube data extraction KeyError: {error}')
+            case Exception():
+                print(f'YouTube data extraction error: {error}')
+
