@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+
+<h1>{{ artist_name }} </h1>
+
+<p> <img src="{{ artist_img }}"
+         width="400"
+         height="400">
+</p>
+
+<p> Genres : {{ artist_genres }} </p>
+
+<p> Top Tracks of {{ artist_name }} : <br>
+{{ artist_tracks }}
+</p>
+
+
+<h2>{{ music_video.video_title }}</h2>
+<!-- clickable image to music video using video thumbnail -->
+<p>
+    <a href="https://www.youtube.com/watch?v={{ music_video.video_id }}">
+        <img src="{{ music_video.thumbnail }}">
+</a>
+</p>
+
+
+<p> Events : <br>
+{{ events_info }}
+</p>
+
+
+<p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
+
+{% endblock %} <!-- this will copy the same style sheet for both pages -->
