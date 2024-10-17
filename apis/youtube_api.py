@@ -1,7 +1,7 @@
 """
 Uses YouTube Data API to search for music videos by artist name in a given search term.
 Requires valid YouTube API token to authenticate the Google API client. Returns dictionary
-of video title and video ID.
+of video title, video ID and video thumbnail.
 """
 
 from googleapiclient.discovery import build
@@ -21,9 +21,9 @@ def main(search_term):
 def google_api_details():
     service_name = 'youtube'
     service_version = 'v3'
-    api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
+    # api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
 
-    with build(service_name, service_version, developerKey=api_key) as youtube_build:
+    with build(service_name, service_version, developerKey='AIzaSyDwqLyFMv40cYjRW8jUEQyBgD-nvxR_PwY') as youtube_build:
         return youtube_build
 
 

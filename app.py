@@ -21,6 +21,8 @@ def get_artist_info():
     events_info = events.main(artist_name)
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
+    # TODO add exception handling
+    # TODO
     return render_template('search_result.html',
                            artist_name=artist_info.artist,
                            artist_img=artist_info.image_url,
