@@ -5,7 +5,6 @@ import logging
 logger = logging.getLogger('peewee')
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.DEBUG)
-
 db = SqliteDatabase('search_results_db.sqlite')
 
 class BaseModel(Model):
@@ -19,7 +18,6 @@ class Artist(BaseModel):
     def __str__(self):
         return f'{self.name}, {self.last_updated}'
 
-
 class Album(BaseModel):
     name = CharField(unique=True)
     release_date = CharField()
@@ -29,20 +27,33 @@ class Album(BaseModel):
     def __str__(self):
         return f'{self.name}, {self.release_date}, {self.last_updated}'
 
-
-class Track(BaseModel):
-    artist = ForeignKeyField(Artist, backref='artist_tracks')
-    title = CharField(unique=True)
-    album = ForeignKeyField(Album, backref='album_tracks')
-    spotify_url = CharField()
-    last_updated = DateTimeField()
+class ArtistAlbum(BaseModel):
+    artist = ForeignKeyField(Artist)
+    album = ForeignKeyField(Album)
 
     def __str__(self):
-        return f'{self.artist}, {self.title}, {self.album}, {self.spotify_url}, {self.last_updated}'
+        return f'{self.artist}, {self.album}'
 
+class Track(BaseModel):
+    title = CharField(unique=True)
+    spotify_url = CharField()
+    last_updated = DateField()
+    artist = ForeignKeyField(Artist, backref='tracks')
+    album = ForeignKeyField(Album, backref='tracks')
+
+    def __str__(self):
+        return f'{self.title}, {self.spotify_url}, {self.last_updated}'
+
+class TrackArtistAlbum(BaseModel):
+    track = ForeignKeyField(Track)
+    artist = ForeignKeyField(Artist)
+    album = ForeignKeyField(Album)
+
+    def __str__(self):
+        return f'{self.artist}, {self.album}, {self.track}'
 
 db.connect()
-db.create_tables([Artist, Album, Track])
+db.create_tables([Artist, Album, ArtistAlbum, Track, TrackArtistAlbum])
 
 Artist.delete().execute()
 Album.delete().execute()
@@ -80,13 +91,11 @@ def main():
         1. Display all artists
         2. Add sample data
         3. Display all albums
+        4. Display all tracks
         2. Search by name
         3. Add new search result
         4. Edit existing table
         5. Delete record 
-        6. Display all artists
-        7. Display all albums
-        8. Display all tracks
         9. Quit
         """
 
@@ -99,6 +108,8 @@ def main():
              sample_data()
         elif choice == '3':
             display_all_albums()
+        elif choice == '4':
+            display_all_tracks()
         # elif choice == '4':
         #     edit_existing_record()
         # elif choice == '5':
@@ -114,9 +125,48 @@ def display_all_artists():
         print(artist)
 
 def display_all_albums():
+    x = ArtistAlbum.select()
+    for a in x:
+        print(a)
+    # might be inefficient, but only way I found to work
     albums = Album.select()
     for album in albums:
         print(f'{album.artist_id}: ', album)
+
+def display_all_tracks():
+    # tracks = TrackArtistAlbum.select()
+    # for track in tracks:
+    #     print(f'{track.track_id} {track.artist_id} {track.album_id}', track)
+
+    # query = (TrackArtistAlbum
+    #          .select(TrackArtistAlbum, Artist, Album, Track)
+    #          .join(Track)
+    #          .switch(TrackArtistAlbum)
+    #          .join(Album)
+    #          .switch(TrackArtistAlbum)
+    #          .join(Artist)
+    #          .order_by(Artist.name))
+    #
+    # for track in query:
+    #     print(track)
+    #     print(f'{track.track_id} - {track.artist_id}, {track.album_id}')
+
+    tracks = Track.select()
+    for track in tracks:
+        # print(f'{track.artist_id}: {track.album_id}', track)
+        print(f'{track.title} - {track.artist_id}, {track.album_id}, {track.spotify_url}, {track.last_updated}')
+    # ^ kinda works
+
+    # query = (Track
+    #          .select(Track, Artist, Album)
+    #          .join(Artist))
+    #
+    # for track in query:
+    #     print(track)
+
+    # tracks = Track.select()
+    # for track in tracks.iterator():
+    #     print(f'{tracks.artist_id}: ', track)
 
 
 if __name__ == '__main__':
