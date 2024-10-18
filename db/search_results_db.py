@@ -27,13 +27,6 @@ class Album(BaseModel):
     def __str__(self):
         return f'{self.name}, {self.release_date}, {self.last_updated}'
 
-class ArtistAlbum(BaseModel):
-    artist = ForeignKeyField(Artist)
-    album = ForeignKeyField(Album)
-
-    def __str__(self):
-        return f'{self.artist}, {self.album}'
-
 class Track(BaseModel):
     title = CharField(unique=True)
     spotify_url = CharField()
@@ -44,16 +37,8 @@ class Track(BaseModel):
     def __str__(self):
         return f'{self.title}, {self.spotify_url}, {self.last_updated}'
 
-class TrackArtistAlbum(BaseModel):
-    track = ForeignKeyField(Track)
-    artist = ForeignKeyField(Artist)
-    album = ForeignKeyField(Album)
-
-    def __str__(self):
-        return f'{self.artist}, {self.album}, {self.track}'
-
 db.connect()
-db.create_tables([Artist, Album, ArtistAlbum, Track, TrackArtistAlbum])
+db.create_tables([Artist, Album, Track])
 
 Artist.delete().execute()
 Album.delete().execute()
@@ -88,8 +73,8 @@ def sample_data():
 
 def main():
     menu_text = """
-        1. Display all artists
-        2. Add sample data
+        1. Add sample data
+        2. Display all artists
         3. Display all albums
         4. Display all tracks
         2. Search by name
@@ -103,9 +88,9 @@ def main():
         print(menu_text)
         choice = input('Enter your choice: ')
         if choice == '1':
-            display_all_artists()
+            sample_data()
         elif choice == '2':
-             sample_data()
+             display_all_artists()
         elif choice == '3':
             display_all_albums()
         elif choice == '4':
@@ -125,48 +110,16 @@ def display_all_artists():
         print(artist)
 
 def display_all_albums():
-    x = ArtistAlbum.select()
-    for a in x:
-        print(a)
     # might be inefficient, but only way I found to work
     albums = Album.select()
     for album in albums:
         print(f'{album.artist_id}: ', album)
 
 def display_all_tracks():
-    # tracks = TrackArtistAlbum.select()
-    # for track in tracks:
-    #     print(f'{track.track_id} {track.artist_id} {track.album_id}', track)
-
-    # query = (TrackArtistAlbum
-    #          .select(TrackArtistAlbum, Artist, Album, Track)
-    #          .join(Track)
-    #          .switch(TrackArtistAlbum)
-    #          .join(Album)
-    #          .switch(TrackArtistAlbum)
-    #          .join(Artist)
-    #          .order_by(Artist.name))
-    #
-    # for track in query:
-    #     print(track)
-    #     print(f'{track.track_id} - {track.artist_id}, {track.album_id}')
-
     tracks = Track.select()
     for track in tracks:
         # print(f'{track.artist_id}: {track.album_id}', track)
         print(f'{track.title} - {track.artist_id}, {track.album_id}, {track.spotify_url}, {track.last_updated}')
-    # ^ kinda works
-
-    # query = (Track
-    #          .select(Track, Artist, Album)
-    #          .join(Artist))
-    #
-    # for track in query:
-    #     print(track)
-
-    # tracks = Track.select()
-    # for track in tracks.iterator():
-    #     print(f'{tracks.artist_id}: ', track)
 
 
 if __name__ == '__main__':
