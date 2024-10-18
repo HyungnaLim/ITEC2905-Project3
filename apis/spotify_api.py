@@ -67,6 +67,17 @@ class Spotify:
         genres_formatted = ', '.join(self.genres)
         return genres_formatted
 
+    def tracks_str(self):
+        track_info_list = []
+        for track in self.tracks:
+            track_info = (f"Title: {track['title']}<br>"
+                          f"Album: {track['album']}<br>"
+                          f"Release Date: {track['release date']}<br>"
+                          f"<a href='{track['spotify url']}'>Listen on Spotify</a><br><br>")
+            track_info_list.append(track_info)
+        return "".join(track_info_list)
+
+
 
 def main(search_artist):
     token = get_token()

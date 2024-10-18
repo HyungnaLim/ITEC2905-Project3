@@ -9,12 +9,15 @@
          height="400">
 </p>
 
-<p> Genres : {{ artist_genres }} </p>
+<hr>
 
-<p> Top Tracks of {{ artist_name }} : <br>
-{{ artist_tracks }}
-</p>
+<h2>Genre</h2>
+<p> {{ artist_genres }} </p>
+<hr>
 
+<h2>Top Tracks of {{ artist_name }}</h2>
+<p> {{ artist_tracks | safe }} </p>
+<hr>
 
 <h2>{{ music_video.video_title }}</h2>
 <!-- clickable image to music video using video thumbnail -->
@@ -24,11 +27,13 @@
 </a>
 </p>
 
+<hr>
 
 <p> Events : <br>
 {{ events_info }}
 </p>
 
+<hr>
 
 <p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
 
