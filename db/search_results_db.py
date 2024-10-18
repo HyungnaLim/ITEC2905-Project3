@@ -1,5 +1,10 @@
 from peewee import *
 from datetime import date
+import logging
+
+logger = logging.getLogger('peewee')
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.DEBUG)
 
 db = SqliteDatabase('search_results_db.sqlite')
 
@@ -9,26 +14,26 @@ class BaseModel(Model):
 
 class Artist(BaseModel):
     name = CharField(unique=True)
-    last_updated = DateTimeField()
+    last_updated = DateField()
 
     def __str__(self):
         return f'{self.name}, {self.last_updated}'
 
 
 class Album(BaseModel):
-    artist = ForeignKeyField(Artist, backref='albums')
     name = CharField(unique=True)
     release_date = CharField()
-    last_updated = DateTimeField()
+    last_updated = DateField()
+    artist = ForeignKeyField(Artist, backref='albums')
 
     def __str__(self):
-        return f'{self.artist}, {self.name}, {self.release_date}, {self.last_updated}'
+        return f'{self.name}, {self.release_date}, {self.last_updated}'
 
 
 class Track(BaseModel):
-    artist = ForeignKeyField(Artist, backref='track')
+    artist = ForeignKeyField(Artist, backref='artist_tracks')
     title = CharField(unique=True)
-    album = ForeignKeyField(Album, backref='track')
+    album = ForeignKeyField(Album, backref='album_tracks')
     spotify_url = CharField()
     last_updated = DateTimeField()
 
@@ -57,7 +62,12 @@ def sample_data():
     oasis = Artist(name='Oasis', last_updated=date.today())
     oasis.save()
 
-    oasis_album = Album(artist=oasis.name, name='(Whats The Story) Morning Glory?', release_date='1995', last_updated=date.today())
+    oasis_album = Album(artist=oasis.name, name='(Whats The Story) Morning Glory?', release_date='1995',
+                        last_updated=date.today())
+    oasis_album.save()
+
+    oasis_album = Album(artist=oasis.name, name='Heathen Chemistry', release_date='2002-07-01',
+                        last_updated=date.today())
     oasis_album.save()
 
     oasis_track = Track(artist=oasis.name, title='Wonderwall', album=oasis_album.name, spotify_url='url2', last_updated=date.today())
@@ -104,38 +114,9 @@ def display_all_artists():
         print(artist)
 
 def display_all_albums():
-    """
-    Tweet.user = Album.artist
-    User.tweet = Artist.album
-    access FK
-    tweet = Tweet.get()
-    tweet.user
-    backref
-    user = User.get()
-    user.tweets
-    """
-    artists = Artist.select()
-    for artist in artists:
-        print(f'Artist: {artist.name}')
-        for album in artist.albums:
-            print(f' Album: {album.name} Release Date: {album.release_date}')
-    # print(artist.albums)
-    # for i in artist.albums:
-    #     print(i.album)
-
-
-
-    # album = Album.get()
-    # print(album.artist)
-    # for x in artist.album:
-    #     print(x.name)
-
-
-
-    # artists = Artist.get()
-    # print(artists.album)
-    # for artist in artists.album:
-    #     print(artist.select())
+    albums = Album.select()
+    for album in albums:
+        print(f'{album.artist_id}: ', album)
 
 
 if __name__ == '__main__':
