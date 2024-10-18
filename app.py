@@ -27,7 +27,7 @@ def get_artist_info():
                            artist_name=artist_info.artist,
                            artist_img=artist_info.image_url,
                            artist_genres=artist_info.genres_str(),
-                           artist_tracks=artist_info.tracks,
+                           artist_tracks=artist_info.tracks_str(),
                            music_video=music_video,
                            events_info=events_info)
 
