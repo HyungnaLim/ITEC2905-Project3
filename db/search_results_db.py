@@ -16,7 +16,7 @@ class Artist(BaseModel):
 
 
 class Album(BaseModel):
-    artist = ForeignKeyField(Artist, backref='album')
+    artist = ForeignKeyField(Artist, backref='albums')
     name = CharField(unique=True)
     release_date = CharField()
     last_updated = DateTimeField()
@@ -46,12 +46,22 @@ Track.delete().execute()
 def sample_data():
     radiohead = Artist(name='Radiohead', last_updated=date.today())
     radiohead.save()
+    print(radiohead.name)
 
     album = Album(artist=radiohead.name, name='Pablo Honey', release_date='02/22/93', last_updated=date.today())
     album.save()
 
-    track = Track(artist='Radiohead', title='Creep', album='Pablo Honey', spotify_url='url', last_updated=date.today())
+    track = Track(artist=radiohead.name, title='Creep', album='Pablo Honey', spotify_url='url', last_updated=date.today())
     track.save()
+
+    oasis = Artist(name='Oasis', last_updated=date.today())
+    oasis.save()
+
+    oasis_album = Album(artist=oasis.name, name='(Whats The Story) Morning Glory?', release_date='1995', last_updated=date.today())
+    oasis_album.save()
+
+    oasis_track = Track(artist=oasis.name, title='Wonderwall', album=oasis_album.name, spotify_url='url2', last_updated=date.today())
+    oasis_track.save()
 
     print('created!')
 
@@ -94,9 +104,38 @@ def display_all_artists():
         print(artist)
 
 def display_all_albums():
-    albums = Album.select()
-    for album in albums:
-        print(album)
+    """
+    Tweet.user = Album.artist
+    User.tweet = Artist.album
+    access FK
+    tweet = Tweet.get()
+    tweet.user
+    backref
+    user = User.get()
+    user.tweets
+    """
+    artists = Artist.select()
+    for artist in artists:
+        print(f'Artist: {artist.name}')
+        for album in artist.albums:
+            print(f' Album: {album.name} Release Date: {album.release_date}')
+    # print(artist.albums)
+    # for i in artist.albums:
+    #     print(i.album)
+
+
+
+    # album = Album.get()
+    # print(album.artist)
+    # for x in artist.album:
+    #     print(x.name)
+
+
+
+    # artists = Artist.get()
+    # print(artists.album)
+    # for artist in artists.album:
+    #     print(artist.select())
 
 
 if __name__ == '__main__':
