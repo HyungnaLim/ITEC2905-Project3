@@ -1,0 +1,5 @@
+requests~=2.32.3
+google-api-python-client~=2.149.0
+urllib3~=2.2.3
+Flask~=3.0.3
+peewee~=3.17.7
