@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Discover Artists!</h1>
+
+<form method="GET" action="get_artist"> <!--form tags is used to contain input fields -->
+    <label>Enter Artist Name: </label>
+    <input name="artist_name">
+    <button type="submit">Search!</button>
+</form>
+
+{% endblock %}
