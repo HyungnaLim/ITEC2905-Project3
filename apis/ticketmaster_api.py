@@ -42,15 +42,17 @@ class TicketmasterAPI:
             print(f'An error occurred: {err}')
             return {'error': str(err)}
 
-if __name__ == '__main__':
+def main(search_term):
     TICKETMASTER_API_KEY = os.getenv('TICKETMASTER_API_KEY', 'GSODZqdDGBo7UGEzXzglQDxeo3fhhdW5')
     ticketmaster = TicketmasterAPI(TICKETMASTER_API_KEY)
 
-    search_term = input("Enter artist name to search for events: ")
+    # search_term = input("Enter artist name to search for events: ")
     events = ticketmaster.search_events(search_term)
 
     if isinstance(events, list):
         for event in events:
-            print(event)
+            # print(event)
+            return event
     else:
-        print(events)
+        # print(events)
+        return events
