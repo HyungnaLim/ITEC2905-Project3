@@ -36,24 +36,33 @@ class Genre(BaseModel):
     def __str__(self):
         return f'{self.genre}'
 
+class Event(BaseModel):
+    name = CharField(unique=True)
+    date = DateField()
+    venue = CharField()
+    artist = ForeignKeyField(Artist, backref='events')
+
+    def __str__(self):
+        return f'{self.name}, {self.date}, {self.venue}'
+
 def create_tables():
     with db:
-        db.create_tables([Artist, Track])
+        db.create_tables([Artist, Track, Event])
 
 def delete_tables():
     with db:
         Artist.delete().execute()
         Track.delete().execute()
+        Event.delete().execute()
 
-def database_connection(spotify_data):
+@db.connection_context()
+def database_connection(spotify_data, events_info):
     try:
-        db.connect()
         create_tables()
         store_artist_info(spotify_data)
+        store_events_info(events_info)
     except Exception as e:
         print(f'{e}')
-    finally:
-        db.close()
 
 def store_artist_info(spotify_data):
     artist, created = Artist.get_or_create(
@@ -63,6 +72,7 @@ def store_artist_info(spotify_data):
             'date_created': datetime.today()
         }
     )
+
     if created:
         print(f'{artist.name} saved! Storing tracks...')
         store_track_info(spotify_data)
@@ -71,7 +81,6 @@ def store_artist_info(spotify_data):
         store_track_info(spotify_data)
 
 def store_track_info(spotify_data):
-    # print(spotify_data.tracks)
     for title in spotify_data.tracks:
         track, created = Track.get_or_create(
             title=title['title'],
@@ -81,10 +90,28 @@ def store_track_info(spotify_data):
                       'date_created': datetime.today(),
                       'artist': spotify_data.artist}
         )
+
         if created:
             print(f'{track.title} stored!')
         else:
             print(f'{track.title} already in database.')
+
+def store_events_info(events):
+    try:
+        for event in events:
+            name, created = Event.get_or_create(
+                name=event['Event'],
+                defaults={'date': event['Date'],
+                          'venue': event['Venue']}
+            )
+
+            if created:
+                print(f'{name.event} record created!')
+            else:
+                print(f'{name.event} already in database.')
+
+    except Exception as error:
+        print(f'Error saving events to database: {error}')
 
 def display_all_artists():
     artists = Artist.select()

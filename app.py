@@ -4,11 +4,10 @@ import apis.youtube_api as video
 import apis.ticketmaster_api as events
 import database.search_results_db as db
 
-DEBUG = True
 app = Flask(__name__)
 
-def store_info(artist_info):
-    db.database_connection(artist_info)
+def store_info(artist_info, events_info):
+    db.database_connection(artist_info, events_info)
 
 @app.route('/') # home page
 def homepage():
@@ -23,9 +22,11 @@ def get_artist_info():
     artist_name = request.args.get('artist_name')
 
     artist_info = spotify.main(artist_name)
-    store_info(artist_info)
-    events_info = events.main(artist_name)
+    events_info = events.main(artist_info.artist)
+    print(events_info)
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+
+    store_info(artist_info, events_info)
 
     return render_template('search_result.html',
                            artist_name=artist_info.artist,
@@ -34,6 +35,8 @@ def get_artist_info():
                            artist_tracks=artist_info.tracks_str(),
                            music_video=music_video,
                            events_info=events_info)
+
+
 
 
 if __name__ == '__main__':
