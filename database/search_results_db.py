@@ -89,9 +89,9 @@ def store_artist_info(spotify_data):
     )
 
     if created:
-        print(f'{artist.name} saved! Storing tracks...')
+        print(f'Artist: {artist.name} saved! Storing tracks...')
     else:
-        print(f'{artist.name} already in database. Storing tracks...')
+        print(f'Artist: {artist.name} already in database. Storing tracks...')
 
 def store_track_info(spotify_data):
     for title in spotify_data.tracks:
@@ -105,9 +105,9 @@ def store_track_info(spotify_data):
         )
 
         if created:
-            print(f'{track.title} saved!')
+            print(f'Track: {track.title} saved!')
         else:
-            print(f'{track.title} already in database.')
+            print(f'Track: {track.title} already in database.')
 
 def store_genres(spotify_data):
     for genre in spotify_data.genres:
@@ -118,9 +118,9 @@ def store_genres(spotify_data):
         )
 
         if created:
-            print(f'{genre} saved!')
+            print(f'Genre: {genre} saved!')
         else:
-            print(f'{genre} already in database.')
+            print(f'Genre: {genre} already in database.')
 
 def store_events_info(artist, events):
     try:
@@ -134,9 +134,9 @@ def store_events_info(artist, events):
             )
 
             if created:
-                print(f'{name.event} saved!')
+                print(f'Event: {name.event} saved!')
             else:
-                print(f'{name.event} already in database.')
+                print(f'Event: {name.event} already in database.')
 
     except Exception as error:
         print(f'Error saving events to database: {error}')
@@ -154,9 +154,9 @@ def store_music_video_info(artist, video):
         )
 
         if created:
-            print(f'{video_row.video_name} saved!')
+            print(f'Video: {video_row.video_name} saved!')
         else:
-            print(f'{video_row.video_name} already in database.')
+            print(f'Video: {video_row.video_name} already in database.')
 
     except Exception as error:
         print(f'Error saving music video to database: {error}')
