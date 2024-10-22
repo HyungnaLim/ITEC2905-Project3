@@ -31,10 +31,12 @@ class Track(BaseModel):
         return f'{self.title}, {self.album}, {self.release_date}, {self.spotify_url}, {self.date_created}'
 
 class Genre(BaseModel):
-    genre = ForeignKeyField(Track, unique=True)
+    genre_name = CharField(unique=True)
+    date_created = DateField()
+    artist = ForeignKeyField(Artist, backref='genres')
 
     def __str__(self):
-        return f'{self.genre}'
+        return f'{self.genre_name}, {self.date_created}'
 
 class Event(BaseModel):
     name = CharField(unique=True)
@@ -58,12 +60,13 @@ class Video(BaseModel):
 
 def create_tables():
     with db:
-        db.create_tables([Artist, Track, Event, Video])
+        db.create_tables([Artist, Track, Genre, Event, Video])
 
 def delete_tables():
     with db:
         Artist.delete().execute()
         Track.delete().execute()
+        Genre.delete().execute()
         Event.delete().execute()
         Video.delete().execute()
 
@@ -72,6 +75,8 @@ def database_connection(spotify_data, events_info, music_video):
     try:
         create_tables()
         store_artist_info(spotify_data)
+        store_track_info(spotify_data)
+        store_genres(spotify_data)
         store_events_info(spotify_data, events_info)
         store_music_video_info(spotify_data, music_video)
     except Exception as e:
@@ -88,10 +93,8 @@ def store_artist_info(spotify_data):
 
     if created:
         print(f'{artist.name} saved! Storing tracks...')
-        store_track_info(spotify_data)
     else:
         print(f'{artist.name} already in database. Storing tracks...')
-        store_track_info(spotify_data)
 
 def store_track_info(spotify_data):
     for title in spotify_data.tracks:
@@ -105,9 +108,22 @@ def store_track_info(spotify_data):
         )
 
         if created:
-            print(f'{track.title} stored!')
+            print(f'{track.title} saved!')
         else:
             print(f'{track.title} already in database.')
+
+def store_genres(spotify_data):
+    for genre in spotify_data.genres:
+        genre_row, created = Genre.get_or_create(
+            genre_name=genre,
+            defaults={'date_created': datetime.today(),
+                      'artist': spotify_data.artist}
+        )
+
+        if created:
+            print(f'{genre} saved!')
+        else:
+            print(f'{genre} already in database.')
 
 def store_events_info(artist, events):
     try:
@@ -121,7 +137,7 @@ def store_events_info(artist, events):
             )
 
             if created:
-                print(f'{name.event} record created!')
+                print(f'{name.event} saved!')
             else:
                 print(f'{name.event} already in database.')
 
@@ -141,9 +157,9 @@ def store_music_video_info(artist, video):
         )
 
         if created:
-            print(f'{video_row.video_name} video saved!')
+            print(f'{video_row.video_name} saved!')
         else:
-            print(f'{video_row.video_name} video already in database.')
+            print(f'{video_row.video_name} already in database.')
 
     except Exception as error:
         print(f'Error saving music video to database: {error}')
