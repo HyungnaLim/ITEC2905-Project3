@@ -6,8 +6,8 @@ import database.search_results_db as db
 
 app = Flask(__name__)
 
-def store_info(artist_info, events_info):
-    db.database_connection(artist_info, events_info)
+def store_info(artist_info, events_info, music_video):
+    db.database_connection(artist_info, events_info, music_video)
 
 @app.route('/') # home page
 def homepage():
@@ -23,10 +23,9 @@ def get_artist_info():
 
     artist_info = spotify.main(artist_name)
     events_info = events.main(artist_info.artist)
-    print(events_info)
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
-    store_info(artist_info, events_info)
+    store_info(artist_info, events_info, music_video)
 
     return render_template('search_result.html',
                            artist_name=artist_info.artist,

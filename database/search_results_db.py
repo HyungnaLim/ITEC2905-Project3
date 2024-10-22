@@ -38,29 +38,42 @@ class Genre(BaseModel):
 
 class Event(BaseModel):
     name = CharField(unique=True)
-    date = DateField()
+    event_date = DateField()
     venue = CharField()
+    date_created = DateField()
     artist = ForeignKeyField(Artist, backref='events')
 
     def __str__(self):
-        return f'{self.name}, {self.date}, {self.venue}'
+        return f'{self.name}, {self.event_date}, {self.venue}, {self.date_created}'
+
+class Video(BaseModel):
+    video_name = CharField(unique=True)
+    video_id = CharField(unique=True)
+    thumbnail_url = CharField()
+    date_created = DateField()
+    artist = ForeignKeyField(Artist, backref='videos')
+
+    def __str__(self):
+        return f'{self.video_name}, {self.video_id}, {self.thumbnail_url}, {self.date_created}'
 
 def create_tables():
     with db:
-        db.create_tables([Artist, Track, Event])
+        db.create_tables([Artist, Track, Event, Video])
 
 def delete_tables():
     with db:
         Artist.delete().execute()
         Track.delete().execute()
         Event.delete().execute()
+        Video.delete().execute()
 
 @db.connection_context()
-def database_connection(spotify_data, events_info):
+def database_connection(spotify_data, events_info, music_video):
     try:
         create_tables()
         store_artist_info(spotify_data)
-        store_events_info(events_info)
+        store_events_info(spotify_data, events_info)
+        store_music_video_info(spotify_data, music_video)
     except Exception as e:
         print(f'{e}')
 
@@ -96,13 +109,15 @@ def store_track_info(spotify_data):
         else:
             print(f'{track.title} already in database.')
 
-def store_events_info(events):
+def store_events_info(artist, events):
     try:
         for event in events:
             name, created = Event.get_or_create(
                 name=event['Event'],
-                defaults={'date': event['Date'],
-                          'venue': event['Venue']}
+                defaults={'event_date': event['Date'],
+                          'venue': event['Venue'],
+                          'date_created': datetime.today(),
+                          'artist': artist.artist}
             )
 
             if created:
@@ -112,6 +127,26 @@ def store_events_info(events):
 
     except Exception as error:
         print(f'Error saving events to database: {error}')
+
+def store_music_video_info(artist, video):
+    try:
+        video_row, created = Video.get_or_create(
+            video_name=video['video_title'],
+            video_id=video['video_id'],
+            defaults={
+                'thumbnail_url': video['thumbnail'],
+                'date_created': datetime.today(),
+                'artist': artist.artist
+            }
+        )
+
+        if created:
+            print(f'{video_row.video_name} video saved!')
+        else:
+            print(f'{video_row.video_name} video already in database.')
+
+    except Exception as error:
+        print(f'Error saving music video to database: {error}')
 
 def display_all_artists():
     artists = Artist.select()
