@@ -22,10 +22,10 @@ def get_artist_info():
     artist_name = request.args.get('artist_name')
 
     artist_info = spotify.main(artist_name)
-    print(artist_info.genres)
     events_info = events.main(artist_info.artist)
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
+    # uncomment below to store ALL searches to database
     store_info(artist_info, events_info, music_video)
 
     return render_template('search_result.html',

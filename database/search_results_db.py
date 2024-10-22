@@ -2,9 +2,6 @@ from peewee import *
 from datetime import date, datetime
 import logging
 
-logger = logging.getLogger('peewee')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.DEBUG)
 db = SqliteDatabase('search_results_db.sqlite')
 
 class BaseModel(Model):
@@ -62,7 +59,7 @@ def create_tables():
     with db:
         db.create_tables([Artist, Track, Genre, Event, Video])
 
-def delete_tables():
+def delete_all_tables():
     with db:
         Artist.delete().execute()
         Track.delete().execute()
@@ -174,65 +171,3 @@ def display_all_tracks():
     for track in tracks:
         print(f'{track.title} - {track.artist_id}, {track.album}, {track.release_date}, '
               f'{track.spotify_url}, {track.date_created}')
-
-def main():
-    db.connect()
-    menu_text = """
-        1. Add sample data
-        2. Display all artists
-        3. Display all tracks
-        4. Delete and create fresh tables
-        2. Search by name
-        3. Add new search result
-        4. Edit existing table
-        5. Delete record 
-        9. Quit
-        """
-
-    while True:
-        print(menu_text)
-        choice = input('Enter your choice: ')
-        if choice == '1':
-            sample_data()
-        elif choice == '2':
-             display_all_artists()
-        elif choice == '3':
-            display_all_tracks()
-        elif choice == '4':
-            delete_create_tables()
-        # elif choice == '4':
-        #     edit_existing_record()
-        # elif choice == '5':
-        #     delete_record()
-        elif choice == '9':
-            delete_create_tables()
-            db.close()
-            break
-        else:
-            print('Not a valid selection, please try again')
-
-def sample_data():
-    radiohead = Artist(name='Radiohead', img_url='url', date_created=date.today())
-    radiohead.save()
-
-    track = Track(artist=radiohead.name, title='Creep', release_date='02/22/93', album='Pablo Honey',
-                  spotify_url='url', date_created=date.today())
-    track.save()
-
-    oasis = Artist(name='Oasis', img_url='url', date_created=date.today())
-    oasis.save()
-
-    oasis_track = Track(artist=oasis.name, title='Wonderwall', release_date='1995',
-                        album='(Whats The Story) Morning Glory?', spotify_url='url2',
-                        date_created=date.today())
-    oasis_track.save()
-
-    print('created!')
-
-def delete_create_tables():
-    delete_tables()
-    create_tables()
-
-if __name__ == '__main__':
-    create_tables()
-    main()
