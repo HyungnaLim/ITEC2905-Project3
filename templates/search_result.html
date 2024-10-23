@@ -16,7 +16,22 @@
 <hr>
 
 <h2>Top Tracks of {{ artist_name }}</h2>
-<p> {{ artist_tracks | safe }} </p>
+<p>
+    Title : {{ artist_track_one['title'] }}<br>
+    Album : {{ artist_track_one['album'] }}<br>
+    Release Date: {{ artist_track_one['release date'] }}<br>
+    <a href ="{{ artist_track_one['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
+    <br>
+    Title : {{ artist_track_two['title'] }}<br>
+    Album : {{ artist_track_two['album'] }}<br>
+    Release Date: {{ artist_track_two['release date'] }}<br>
+    <a href ="{{ artist_track_two['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
+    <br>
+    Title : {{ artist_track_three['title'] }}<br>
+    Album : {{ artist_track_three['album'] }}<br>
+    Release Date: {{ artist_track_three['release date'] }}<br>
+    <a href ="{{ artist_track_three['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
+</p>
 <hr>
 
 <h2>{{ music_video.video_title }}</h2>
