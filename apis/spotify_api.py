@@ -65,7 +65,7 @@ def get_top_tracks_by_artist_id(auth, artist_id):
             json_response = track_response.json()
             tracks = json_response['tracks']
             if not tracks:
-                return SpotifyError('No tracks found for this artist')
+                return None
             track_collector = []
             for i, track in enumerate(tracks):
                 if i >= 3:  # Stop after the third item
