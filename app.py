@@ -2,8 +2,12 @@ from flask import Flask, render_template, request  # NOT the same as requests
 import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
+import database.search_results_db as db
 
 app = Flask(__name__)
+
+def store_info(artist_info, events_info, music_video):
+    db.database_connection(artist_info, events_info, music_video)
 
 @app.route('/') # home page
 def homepage():
@@ -18,11 +22,12 @@ def get_artist_info():
     artist_name = request.args.get('artist_name')
 
     artist_info = spotify.main(artist_name)
-    events_info = events.main(artist_name)
+    events_info = events.main(artist_info.artist)
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
-    # TODO add exception handling
-    # TODO
+    # uncomment below to store ALL searches to database
+    # store_info(artist_info, events_info, music_video)
+
     return render_template('search_result.html',
                            artist_name=artist_info.artist,
                            artist_img=artist_info.image_url,
@@ -32,6 +37,8 @@ def get_artist_info():
                            artist_track_three=artist_info.tracks[2],
                            music_video=music_video,
                            events_info=events_info)
+
+
 
 
 if __name__ == '__main__':
