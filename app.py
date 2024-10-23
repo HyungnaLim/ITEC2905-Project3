@@ -26,7 +26,7 @@ def get_artist_info():
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
     # uncomment below to store ALL searches to database
-    store_info(artist_info, events_info, music_video)
+    # store_info(artist_info, events_info, music_video)
 
     return render_template('search_result.html',
                            artist_name=artist_info.artist,

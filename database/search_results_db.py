@@ -15,6 +15,13 @@ class Artist(BaseModel):
     def __str__(self):
         return f'{self.name}, {self.img_url}, {self.date_created}'
 
+    def get_genres(self):
+        return (Artist
+                .select()
+                .join(Relationship, on=Relationship.to_genre)
+                .where(Relationship.from_artist == self)
+                .order_by(Artist.name))
+
 class Track(BaseModel):
     title = CharField(unique=True)
     album = CharField()
@@ -29,7 +36,6 @@ class Track(BaseModel):
 class Genre(BaseModel):
     genre_name = CharField(unique=True)
     date_created = DateField()
-    artist = ForeignKeyField(Artist, backref='genres')
 
     def __str__(self):
         return f'{self.genre_name}, {self.date_created}'
@@ -54,9 +60,18 @@ class Video(BaseModel):
     def __str__(self):
         return f'{self.video_name}, {self.video_id}, {self.thumbnail_url}, {self.date_created}'
 
+class Relationship(BaseModel):
+    from_artist = ForeignKeyField(Artist, backref='relationships')
+    to_genre = ForeignKeyField(Genre, backref='related_to')
+
+    class Meta:
+        indexes = (
+            (('from_artist', 'to_genre'), True),
+        )
+
 def create_tables():
     with db:
-        db.create_tables([Artist, Track, Genre, Event, Video])
+        db.create_tables([Artist, Track, Genre, Event, Video, Relationship])
 
 def delete_all_tables():
     with db:
@@ -112,9 +127,17 @@ def store_genres(spotify_data):
     for genre in spotify_data.genres:
         genre_row, created = Genre.get_or_create(
             genre_name=genre,
-            defaults={'date_created': datetime.today(),
-                      'artist': spotify_data.artist}
+            defaults={'date_created': datetime.today()}
         )
+        try:
+            with db.atomic():
+                Relationship.create(
+                    from_artist=spotify_data.artist,
+                    to_genre=genre)
+            print(f'{genre} relationship created.')
+        except IntegrityError:
+            print(f'{genre} relationship passed.')
+            pass
 
         if created:
             print(f'Genre: {genre} saved!')
