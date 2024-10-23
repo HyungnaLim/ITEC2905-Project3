@@ -39,12 +39,12 @@ def get_artist_info():
 def save_artist():
     artist = session.get('user_search')
     store_search_data(artist)
-    flash('Artist saved!')
-    # replace index with bookmarks.html
+    flash(f'{artist['artist_name']} saved!')
+    # TODO replace index with bookmarks.html or artist page
     return redirect(url_for('homepage'))
 
 def store_search_data(artist):
-    # send to search_results_db
+    # TODO send to search_results_db
     # some_save_function_to_db(artist)
     print(f'Pretend saved {artist['artist_name']} to database!')
 
