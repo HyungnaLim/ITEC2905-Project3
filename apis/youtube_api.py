@@ -3,9 +3,9 @@ Uses YouTube Data API to search for music videos by artist name in a given searc
 Requires valid YouTube API token to authenticate the Google API client. Returns dictionary
 of video title, video ID and video thumbnail.
 """
-
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
+import html
 import os
 
 # name and version index for supported APIs
@@ -67,7 +67,7 @@ def request_youtube_video(request_video):
 def api_data_extraction(api_response_data):
     try:
         for data in api_response_data.get('items', []):
-            video_title = data['snippet']['title']
+            video_title = html.unescape(data['snippet']['title'])
             video_id = data['id']['videoId']
             video_thumbnail = data['snippet']['thumbnails']['high']['url']
 
