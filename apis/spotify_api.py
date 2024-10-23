@@ -48,25 +48,34 @@ def get_artist_info(auth, search_artist):
 
 def get_top_tracks_by_artist_id(auth, artist_id):
     try:
-        json_res = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks',
-                                              headers=auth).json()
-        tracks = json_res['tracks']
-        if not tracks:
-            return SpotifyError('No tracks found for this artist')
+        track_response = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks', headers=auth)
+        if track_response.status_code == 200:
+            json_response = track_response.json()
+            tracks = json_response['tracks']
+            if not tracks:
+                return SpotifyError('No tracks found for this artist')
+            track_collector = []
+            for i, track in enumerate(tracks):
+                if i >= 3:  # Stop after the third item
+                    break
 
-        track_collector = []
+                track_dict = {'title': track['name'],
+                              'album': track['album']['name'],
+                              'release date': track['album']['release_date'],
+                              'spotify url': track['external_urls']['spotify']}
+                track_collector.append(track_dict)
+            return track_collector
 
-        for i, track in enumerate(tracks):
-            if i >= 3:  # Stop after the third item
-                break
-
-            track_dict = {'title': track['name'],
-                          'album': track['album']['name'],
-                          'release date': track['album']['release_date'],
-                          'spotify url': track['external_urls']['spotify']}
-            track_collector.append(track_dict)
-
-        return track_collector
+        elif track_response.status_code == 401:
+            return SpotifyError('Spotify API 401 Error: Bad or expired token')
+        elif track_response.status_code == 403:
+            return SpotifyError('Spotify API 403 Error: Bad OAuth request')
+        elif track_response.status_code == 429:
+            return SpotifyError('Spotify API 429 Error: The app has exceeded its rate limits')
+        elif track_response.status_code == 500:
+            return SpotifyError('Spotify API 500 Error: Internal server error')
+        else:
+            return SpotifyError('Spotify API Error: Unexpected error occurred')
 
     except requests.exceptions.HTTPError as error:
         print(f'Unexpected Error: {error}')
