@@ -2,6 +2,7 @@ from flask import Flask, render_template, request  # NOT the same as requests
 import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
+from apis.spotify_api import SpotifyError
 
 app = Flask(__name__)
 
@@ -18,20 +19,22 @@ def get_artist_info():
     artist_name = request.args.get('artist_name')
 
     artist_info = spotify.main(artist_name)
-    events_info = events.main(artist_name)
-    music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+    if isinstance(artist_info, SpotifyError):
+        return render_template('error.html',
+                               spotify_error=artist_info)
+    else:
+        events_info = events.main(artist_name)
+        music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
-    # TODO add exception handling
-    # TODO
-    return render_template('search_result.html',
-                           artist_name=artist_info.artist,
-                           artist_img=artist_info.image_url,
-                           artist_genres=artist_info.genres_str(),
-                           artist_track_one=artist_info.tracks[0],
-                           artist_track_two=artist_info.tracks[1],
-                           artist_track_three=artist_info.tracks[2],
-                           music_video=music_video,
-                           events_info=events_info)
+        # TODO add exception handling
+        # TODO
+        return render_template('search_result.html',
+                               artist_name=artist_info.artist,
+                               artist_img=artist_info.image_url,
+                               artist_genres=artist_info.genres_str(),
+                               artist_tracks=artist_info.tracks_str(),
+                               music_video=music_video,
+                               events_info=events_info)
 
 
 if __name__ == '__main__':
