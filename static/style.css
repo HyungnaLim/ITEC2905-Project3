@@ -4,3 +4,7 @@ body {
     text-align: center;
     font-family: 'Trebuchet MS', Tahoma, Geneva, Verdana, sans-serif;
 }
+
+#artist_data {
+    width: 10em; height: 2em;
+}
