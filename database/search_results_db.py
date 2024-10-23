@@ -1,6 +1,5 @@
 from peewee import *
-from datetime import date, datetime
-import logging
+from datetime import datetime
 
 db = SqliteDatabase('search_results_db.sqlite')
 
@@ -160,14 +159,3 @@ def store_music_video_info(artist, video):
 
     except Exception as error:
         print(f'Error saving music video to database: {error}')
-
-def display_all_artists():
-    artists = Artist.select()
-    for artist in artists:
-        print(artist)
-
-def display_all_tracks():
-    tracks = Track.select()
-    for track in tracks:
-        print(f'{track.title} - {track.artist_id}, {track.album}, {track.release_date}, '
-              f'{track.spotify_url}, {track.date_created}')
