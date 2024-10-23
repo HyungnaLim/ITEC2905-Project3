@@ -2,7 +2,6 @@ from flask import Flask, render_template, request  # NOT the same as requests
 import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
-from apis.spotify_api import SpotifyError
 
 app = Flask(__name__)
 
@@ -19,12 +18,14 @@ def get_artist_info():
     artist_name = request.args.get('artist_name')
 
     artist_info = spotify.main(artist_name)
-    if isinstance(artist_info, SpotifyError):
-        return render_template('error.html',
-                               spotify_error=artist_info)
+    if artist_info is None:
+        return render_template('error.html', error='Spotify API error: cannot get artist info')
     else:
         events_info = events.main(artist_name)
-        music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+        if artist_info.tracks is not None:
+            music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+        else:
+            music_video = None
 
         # TODO add exception handling
         # TODO

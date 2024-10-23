@@ -1,4 +1,5 @@
 import requests
+from pyparsing import empty
 from requests import HTTPError
 
 
@@ -27,22 +28,33 @@ def get_artist_info(auth, search_artist):
 
     if search_response.status_code == 200:
         json_response = search_response.json()
-        artist_name = json_response['artists']['items'][0]['name']
-        artist_id = json_response['artists']['items'][0]['id']
-        artist_image_url = json_response['artists']['items'][0]['images'][0]['url']
-        artist_genres = json_response['artists']['items'][0]['genres']
+        if json_response['artists']['items']:
+            artist_name = json_response['artists']['items'][0]['name']
+            artist_id = json_response['artists']['items'][0]['id']
+            if json_response['artists']['items'][0]['images']:
+                artist_image_url = json_response['artists']['items'][0]['images'][0]['url']
+            else:   # when there is a matching artist but no image url, return None
+                artist_image_url = None
+            artist_genres = json_response['artists']['items'][0]['genres']
+            if not artist_genres:   # when there is a matching artist but no genre specified, return None
+                artist_genres = None
+        else:   # when there is no matching artist, return None
+            artist_name = None
+            artist_id = None
+            artist_image_url = None
+            artist_genres = None
         return artist_name, artist_id, artist_image_url, artist_genres
 
     elif search_response.status_code == 401:
-        return SpotifyError('Spotify API 401 Error: Bad or expired token')
+        return None
     elif search_response.status_code == 403:
-        return SpotifyError('Spotify API 403 Error: Bad OAuth request')
+        return None
     elif search_response.status_code == 429:
-        return SpotifyError('Spotify API 429 Error: The app has exceeded its rate limits')
+        return None
     elif search_response.status_code == 500:
-        return SpotifyError('Spotify API 500 Error: Internal server error')
+        return None
     else:
-        return SpotifyError('Spotify API Error: Unexpected error occurred')
+        return None
 
 
 
@@ -67,19 +79,19 @@ def get_top_tracks_by_artist_id(auth, artist_id):
             return track_collector
 
         elif track_response.status_code == 401:
-            return SpotifyError('Spotify API 401 Error: Bad or expired token')
+            return None
         elif track_response.status_code == 403:
-            return SpotifyError('Spotify API 403 Error: Bad OAuth request')
+            return None
         elif track_response.status_code == 429:
-            return SpotifyError('Spotify API 429 Error: The app has exceeded its rate limits')
+            return None
         elif track_response.status_code == 500:
-            return SpotifyError('Spotify API 500 Error: Internal server error')
+            return None
         else:
-            return SpotifyError('Spotify API Error: Unexpected error occurred')
+            return None
 
     except requests.exceptions.HTTPError as error:
         print(f'Unexpected Error: {error}')
-        return SpotifyError('Unknown Error')
+        return None
 
 
 class Spotify:
@@ -93,23 +105,18 @@ class Spotify:
         return f'{self.artist}, {self.image_url}, {self.genres}, {self.tracks}'
 
     def genres_str(self):
-        genres_formatted = ', '.join(self.genres)
-        return genres_formatted
-
-
-class SpotifyError:
-    def __init__(self, error_message):
-        self.error_message = error_message
-
-    def __str__(self):
-        return self.error_message
+        if self.genres is not None:
+            genres_formatted = ', '.join(self.genres)
+            return genres_formatted
+        else:
+            return None
 
 
 def main(search_artist):
     token = get_token()
     get_artist_response = get_artist_info(token, search_artist)
 
-    if isinstance(get_artist_response, SpotifyError):
+    if get_artist_response is None:
         return get_artist_response
     else:
         name, id, img_url, genres = get_artist_response
