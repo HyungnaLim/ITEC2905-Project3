@@ -54,11 +54,13 @@ def get_artist_info(auth, search_artist):
 
 def get_top_tracks_by_artist_id(auth, artist_id):
     try:
-        response = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks', headers=auth)
-        track_response = response.json()
+        track_response = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks', headers=auth)
 
-        if track_response == 200:
-            tracks = track_response['tracks']
+        if track_response.status_code == 200:
+            track_json = track_response.json()
+            tracks = track_json['tracks']
+            if not tracks:
+                return None  # return None when there's no track
             track_collector = []
             for i, track in enumerate(tracks):
                 if i >= 3:  # Stop after the third item
