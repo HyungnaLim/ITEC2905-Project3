@@ -5,7 +5,7 @@
 
 <form method="GET" action="get_artist"> <!--form tags is used to contain input fields -->
     <label>Enter Artist Name: </label>
-    <input name="artist_name">
+    <input name="artist_name" required pattern=".*\S+.*" title="Name cannot be empty or spaces only">
     <button type="submit">Search!</button>
 </form>
 
