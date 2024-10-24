@@ -27,11 +27,13 @@ def get_artist_info():
         events_info = events.main(artist_name)
         if artist_info.tracks is not None:
             music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+            music_video_title = music_video['video_title']
             artist_track_one = artist_info.tracks[0]
             artist_track_two = artist_info.tracks[1]
             artist_track_three = artist_info.tracks[2]
         else:
             music_video = None
+            music_video_title = 'Music Video'
             artist_track_one = None
             artist_track_two = None
             artist_track_three = None
@@ -44,6 +46,7 @@ def get_artist_info():
                                artist_track_two=artist_track_two,
                                artist_track_three=artist_track_three,
                                music_video=music_video,
+                               music_video_title=music_video_title,
                                events_info=events_info)
 
 
