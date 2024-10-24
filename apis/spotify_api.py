@@ -111,7 +111,6 @@ class Spotify:
         else:
             return None
 
-
 def main(search_artist):
     token = get_token()
     get_artist_response = get_artist_info(token, search_artist)
