@@ -1,7 +1,4 @@
 import requests
-from pyparsing import empty
-from requests import HTTPError
-
 
 def get_token():
     # TODO: set client credentials as environment variables
@@ -28,21 +25,18 @@ def get_artist_info(auth, search_artist):
 
     if search_response.status_code == 200:
         json_response = search_response.json()
-        if json_response['artists']['items']:
+        if not json_response['artists']['items'] == []:
             artist_name = json_response['artists']['items'][0]['name']
             artist_id = json_response['artists']['items'][0]['id']
-            if json_response['artists']['items'][0]['images']:
+            if not json_response['artists']['items'][0]['images']:
+                artist_image_url = None   # when there is a matching artist but no image url, return None
+            else:
                 artist_image_url = json_response['artists']['items'][0]['images'][0]['url']
-            else:   # when there is a matching artist but no image url, return None
-                artist_image_url = None
             artist_genres = json_response['artists']['items'][0]['genres']
             if not artist_genres:   # when there is a matching artist but no genre specified, return None
                 artist_genres = None
         else:   # when there is no matching artist, return None
-            artist_name = None
-            artist_id = None
-            artist_image_url = None
-            artist_genres = None
+            return None
         return artist_name, artist_id, artist_image_url, artist_genres
 
     elif search_response.status_code == 401:
@@ -60,17 +54,15 @@ def get_artist_info(auth, search_artist):
 
 def get_top_tracks_by_artist_id(auth, artist_id):
     try:
-        track_response = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks', headers=auth)
-        if track_response.status_code == 200:
-            json_response = track_response.json()
-            tracks = json_response['tracks']
-            if not tracks:
-                return None
+        response = requests.get(f'https://api.spotify.com/v1/artists/{artist_id}/top-tracks', headers=auth)
+        track_response = response.json()
+
+        if track_response == 200:
+            tracks = track_response['tracks']
             track_collector = []
             for i, track in enumerate(tracks):
                 if i >= 3:  # Stop after the third item
                     break
-
                 track_dict = {'title': track['name'],
                               'album': track['album']['name'],
                               'release date': track['album']['release_date'],
