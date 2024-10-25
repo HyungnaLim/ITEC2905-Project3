@@ -2,6 +2,7 @@ from flask import Flask, render_template, flash, redirect, session, request, url
 import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
+import database.search_results_db as db
 
 app = Flask(__name__)
 
