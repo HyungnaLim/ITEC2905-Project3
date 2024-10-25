@@ -44,8 +44,18 @@ def save_artist():
     # TODO replace index with bookmarks.html or artist page
     return redirect(url_for('homepage'))
 
+@app.route('/bookmark', methods=['GET', 'POST'])
+def bookmarks():
+    if request.method == 'POST':
+        if request.form.get('action') == "Sample Page":
+            return render_template('error.html', error='sample')
+        # if 'Sample Page' in request.form:
+        elif request.form.get('action') == "Saved Artists":
+            return render_template('error.html', error='saved')
+        # elif 'Saved Artists' in request.form:
+
+
 def store_search_data(artist):
-    print(artist)
     db.database_connection(artist)
     print(f'Saved {artist['artist_name']} to database!')
 
