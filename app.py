@@ -3,6 +3,7 @@ import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
 import database.search_results_db as db
+from database.sample_artist import placeholder
 
 app = Flask(__name__)
 
@@ -48,16 +49,25 @@ def save_artist():
 def bookmarks():
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
-            return render_template('error.html', error='sample')
-        # if 'Sample Page' in request.form:
+            sample = placeholder()
+            return render_template('sample.html',
+                                   artist_name=sample['artist_name'],
+                                   artist_img=sample['artist_img_url'],
+                                   artist_genres=sample['artist_genre'][0],
+                                   artist_tracks=sample['tracks'],
+                                   music_video=sample['video_title'],
+                                   music_video_id=sample['video_id'],
+                                   music_video_thumb=sample['video_thumbnail'],
+                                   events_info=sample['event'][0])
+
         elif request.form.get('action') == "Saved Artists":
             return render_template('error.html', error='saved')
-        # elif 'Saved Artists' in request.form:
 
 
 def store_search_data(artist):
     db.database_connection(artist)
     print(f'Saved {artist['artist_name']} to database!')
+
 
 def data_constructor(artist_info, event_info, music_video):
     results = {
