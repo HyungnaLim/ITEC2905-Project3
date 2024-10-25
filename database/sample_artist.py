@@ -2,7 +2,7 @@ def placeholder():
      return {
             'artist_name': 'Rick Astley',
             'artist_img_url': 'https://i.scdn.co/image/ab6761610000e5eb019782a5d4654e00db2a28a0',
-            'artist_genre': ['new romantic', 'new wave pop', 'soft rock', 'synthpop'],
+            'artist_genre': ['new romantic, new wave pop, soft rock, synthpop'],
             'tracks': [{
                 'title': 'Never Gonna Give You Up',
                 'album': 'Whenever You Need Somebody',

@@ -16,17 +16,17 @@
 <hr>
 
 <h2>Top Tracks</h2>
+
 <!-- https://python-web.teclado.com/section07/lectures/07_jinja2_loops/ -->
     {% for track in artist_tracks %}
-        {% for value in track.values() %}
-        <p>
-            Title: {{ value }}<br>
-            Album: {{ value }}<br>
-            Release Date: {{ value }}<br>
-            {{ value }}
-        </p>
-        {% endfor %}
+    <p>
+        Title: {{ track.title }}<br>
+        Album: {{ track.album }}<br>
+        Release Date: {{ track.release_date }}<br>
+        {{ track.spotify_url }}
+    </p>
     {% endfor %}
+
 <hr>
 
 <h2>{{ music_video }}</h2>
