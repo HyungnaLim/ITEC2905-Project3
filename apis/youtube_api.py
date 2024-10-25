@@ -3,6 +3,8 @@ Uses YouTube Data API to search for music videos by artist name in a given searc
 Requires valid YouTube API token to authenticate the Google API client. Returns dictionary
 of video title, video ID and video thumbnail.
 """
+import logging
+
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 import html
@@ -40,14 +42,14 @@ def main(search_term):
     except (UnknownApiNameOrVersion, HttpError, Exception) as e:
         match e:
             case UnknownApiNameOrVersion():
-                err_msg = f'Error unknown YouTube API name or version: {e}. Supported APIs: {api_name_version_index}'
-                return None, err_msg
+                logging.exception(e)
+                return None, f'Error unknown YouTube API name or version: {e}. Supported APIs: {api_name_version_index}'
             case HttpError():
-                err_msg = f'Error YouTube response status code: {e.status_code}, reason: {e.error_details}'
-                return None, err_msg
+                logging.exception(e)
+                return None, f'Error YouTube response status code: {e.status_code}, reason: {e.error_details}'
             case Exception():
-                err_msg = f'YouTube API Error: {e}'
-                return None, err_msg
+                logging.exception(e)
+                return None, f'YouTube API Error: {e}'
 
 
 def response_data_extraction(api_response_data):
@@ -63,8 +65,8 @@ def response_data_extraction(api_response_data):
     except (KeyError, Exception) as e:
         match e:
             case KeyError():
-                err_msg = f'YouTube data extraction KeyError: {e}'
-                return None, err_msg
+                logging.exception(e)
+                return None, f'YouTube data extraction KeyError: {e}'
             case Exception():
-                err_msg = f'YouTube data extraction error: {e}'
-                return None, err_msg
+                logging.exception(e)
+                return None, f'YouTube data extraction error: {e}'
