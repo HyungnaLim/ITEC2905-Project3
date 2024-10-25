@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- https://python-web.teclado.com/section07/lectures/06_jinja2_conditional_statements/#basic-comparisons -->
+<h1>Saved Artists</h1>
+
+{% if artists %}
+    {% for artist in artists %}
+        <p>
+            {{ artist.name }} | {{ artist.date_created.date() }}
+        </p>
+
+    {% endfor %}
+
+{% else %}
+    No artists saved yet!
+
+{% endif %}
+
+<hr>
+
+<p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
+
+{% endblock %}

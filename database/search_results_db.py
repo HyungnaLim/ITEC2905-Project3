@@ -7,6 +7,13 @@ class BaseModel(Model):
     class Meta:
         database = db
 
+
+def get_all_artists():
+    return (Artist
+            .select()
+            .order_by(Artist.date_created))
+
+
 class Artist(BaseModel):
     name = CharField(unique=True)
     img_url = CharField()
@@ -34,14 +41,14 @@ class Track(BaseModel):
         return f'{self.title}, {self.album}, {self.release_date}, {self.spotify_url}, {self.date_created}'
 
 class Genre(BaseModel):
-    genre_name = CharField(unique=True)
+    genre_name = CharField(unique=True, null=True)
     date_created = DateTimeField()
 
     def __str__(self):
         return f'{self.genre_name}, {self.date_created}'
 
 class Event(BaseModel):
-    name = CharField(unique=True)
+    name = CharField(unique=True, null=True)
     event_date = DateField()
     venue = CharField()
     date_created = DateTimeField()
@@ -82,8 +89,8 @@ def delete_all_tables():
         Video.delete().execute()
 
 @db.connection_context()
-def database_connection(artist_data):
-    print(artist_data)
+def store_artist_data(artist_data):
+    # print(artist_data)
     try:
         create_tables()
         store_artist_info(artist_data)
@@ -102,7 +109,6 @@ def store_artist_info(spotify_data):
             'date_created': datetime.now()
         }
     )
-
     if created:
         print(f'Artist: {artist.name} saved! Storing tracks...')
     else:
@@ -118,7 +124,6 @@ def store_track_info(spotify_data):
                       'date_created': datetime.now(),
                       'artist': spotify_data['artist_name']}
         )
-
         if created:
             print(f'Track: {track.title} saved!')
         else:
@@ -150,12 +155,11 @@ def store_events_info(events):
         for event in events:
             name, created = Event.get_or_create(
                 name=event['event_name'],
-                defaults={'event_date': event['event_date'],
-                          'venue': event['event_venue'],
+                defaults={'event_date': event.event_date,
+                          'venue': event.event_venue,
                           'date_created': datetime.now(),
                           'artist': event['artist_name']}
             )
-
             if created:
                 print(f'Event: {name.event} saved!')
             else:
@@ -175,7 +179,6 @@ def store_music_video_info(video):
                 'artist': video['artist_name']
             }
         )
-
         if created:
             print(f'Video: {video_row.video_name} saved!')
         else:

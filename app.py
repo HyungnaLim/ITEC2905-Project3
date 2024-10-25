@@ -40,7 +40,7 @@ def get_artist_info():
 @app.route('/save_search', methods=['POST'])
 def save_artist():
     artist = session.get('user_search')
-    store_search_data(artist)
+    db.store_artist_data(artist)
     flash(f'{artist['artist_name']} saved!')
     # TODO replace index with bookmarks.html or artist page
     return redirect(url_for('homepage'))
@@ -61,13 +61,9 @@ def bookmarks():
                                    events_info=sample['event'][0])
 
         elif request.form.get('action') == "Saved Artists":
-            return render_template('error.html', error='saved')
-
-
-def store_search_data(artist):
-    db.database_connection(artist)
-    print(f'Saved {artist['artist_name']} to database!')
-
+            stored_artists = db.get_all_artists()
+            return render_template('bookmarks.html',
+                                   artists=stored_artists)
 
 def data_constructor(artist_info, event_info, music_video):
     results = {
@@ -82,6 +78,7 @@ def data_constructor(artist_info, event_info, music_video):
         'video_id': music_video['video_id'],
         'video_thumbnail': music_video['thumbnail']
     }
+    print(results)
     return results
 
 if __name__ == '__main__':
