@@ -38,10 +38,10 @@ def main(search_term):
         match e:
             case UnknownApiNameOrVersion():
                 logging.exception(e)
-                return None, f'Error unknown YouTube API name or version: {e}. Supported APIs: {name_version_index}'
+                return None, f'Error, unknown YouTube API name or version: {e}. Supported APIs: {name_version_index}'
             case HttpError():
                 logging.exception(e)
-                return None, f'Error YouTube response status code: {e.status_code}, reason: {e.error_details}'
+                return None, f'Error, YouTube response status code: {e.status_code}, reason: {e.error_details}'
             case Exception():
                 logging.exception(e)
                 return None, f'YouTube API Error: {e}'
