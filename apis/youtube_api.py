@@ -1,27 +1,22 @@
 """
-Uses YouTube Data API to search for music videos by artist name in a given search term.
-Requires valid YouTube API token to authenticate the Google API client. Returns dictionary
-of video title, video ID and video thumbnail.
+Uses Google API Python Client to search YouTube for music videos in a given search term. Requires valid API
+token to authenticate the Google API client. Returns dictionary of video title, video ID and video thumbnail.
 """
-import logging
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 import html
+import logging
 import os
 
 # name and version index for supported APIs
-api_name_version_index = 'https://github.com/googleapis/google-api-python-client/blob/main/docs/dyn/index.md#youtube'
+name_version_index = 'https://github.com/googleapis/google-api-python-client/blob/main/docs/dyn/index.md#youtube'
 service_name = 'youtube'
 service_version = 'v3'
 # api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
 
 
 def main(search_term):
-    video_title = 'items(snippet/title)'
-    video_id = 'items(id/videoId)'
-    video_thumbnail = 'items(snippet/thumbnails/high/url)'
-
     try:
         with (build(service_name, service_version, developerKey='AIzaSyDwqLyFMv40cYjRW8jUEQyBgD-nvxR_PwY')
               as request):
@@ -31,7 +26,7 @@ def main(search_term):
                     q=f'{search_term} music video',
                     type='video',
                     videoCategoryId=10,
-                    fields=f'{video_title},{video_id},{video_thumbnail}'
+                    fields=f'items(snippet/title),items(id/videoId),items(snippet/thumbnails/high/url)'
                 ).execute()
 
         youtube_video, error_message = response_data_extraction(response)
@@ -43,7 +38,7 @@ def main(search_term):
         match e:
             case UnknownApiNameOrVersion():
                 logging.exception(e)
-                return None, f'Error unknown YouTube API name or version: {e}. Supported APIs: {api_name_version_index}'
+                return None, f'Error unknown YouTube API name or version: {e}. Supported APIs: {name_version_index}'
             case HttpError():
                 logging.exception(e)
                 return None, f'Error YouTube response status code: {e.status_code}, reason: {e.error_details}'
