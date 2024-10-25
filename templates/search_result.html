@@ -29,11 +29,14 @@
 
 <hr>
 
-<p> Events : <br>
-{{ events_info }}
-</p>
+<h2>Events</h2>
+<p> {{ events_info }} </p>
 
 <hr>
+
+<form action="/save_search" method="post">
+    <button id="artist_data" type="submit">Save Artist</button>
+</form>
 
 <p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
 
