@@ -45,9 +45,9 @@ def save_artist():
     return redirect(url_for('homepage'))
 
 def store_search_data(artist):
-    # TODO send to search_results_db
-    # some_save_function_to_db(artist)
-    print(f'Pretend saved {artist['artist_name']} to database!')
+    print(artist)
+    db.database_connection(artist)
+    print(f'Saved {artist['artist_name']} to database!')
 
 def data_constructor(artist_info, event_info, music_video):
     results = {
