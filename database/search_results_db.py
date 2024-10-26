@@ -202,18 +202,12 @@ def get_artist_data(name):
         artist = Artist.get(Artist.name == name)
 
         artist_dict = get_artist(artist)
-        # print(f'artist {artist_dict}')
         tracks = get_tracks(artist)
-        # print(f'track {tracks}')
         genres = get_genres(artist)
-        # print(f'genres {genres}')
         events = get_events(artist)
-        print(f'events {events}')
         video = get_video(artist)
-        print(f'video {video}')
 
-        artist_info = [artist_dict, tracks, genres, events, video]
-        print(artist_info)
+        artist_info = [artist_dict, tracks, genres, video, events]
         return artist_info
     except Exception as e:
         print(f'{e}')
@@ -225,6 +219,7 @@ def get_artist(artist):
     }
 
 def get_tracks(artist):
+    # tracks = {}
     track_li = []
     for track in artist.tracks:
         a_track = {
@@ -235,12 +230,13 @@ def get_tracks(artist):
             'date_created': track.date_created
         }
         track_li.append(a_track)
+    # tracks['tracks'] = track_li
     return track_li
 
 def get_genres(artist):
     genres = []
-    for genre in artist.genres:
-        genres.append(genre.genre_name)
+    for g in artist.genres:
+        genres.append(g.genre_name)
     return genres
 
 def get_events(artist):

@@ -4,6 +4,7 @@ import apis.youtube_api as video
 import apis.ticketmaster_api as events
 import database.search_results_db as db
 from database.sample_artist import placeholder
+from database.search_results_db import Artist
 
 app = Flask(__name__)
 
@@ -67,10 +68,23 @@ def bookmarks():
 
 @app.route('/artist/<name>')
 def artist(name):
-    artist_data = db.get_artist_data(name)
-    print(artist_data)
+    chosen_artist = Artist.get(Artist.name == name)
+    genres = db.get_genres(chosen_artist)
+    tracks = db.get_tracks(chosen_artist)
+    print(tracks)
+    db_video = db.get_video(chosen_artist)
+    db_events = db.get_events(chosen_artist)
+
     return render_template('sample.html',
-                           artist_name=name)
+                           artist_name=name,
+                           artist_img=chosen_artist.img_url,
+                           artist_genres=genres[0],
+                           artist_tracks=tracks,
+                           music_video=db_video['video_title'],
+                           music_video_id=db_video['video_id'],
+                           music_video_thumb=db_video['video_thumbnail'],
+                           events_info=db_events
+                           )
 
 def data_constructor(artist_info, event_info, music_video):
     results = {
