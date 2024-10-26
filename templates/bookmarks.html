@@ -7,7 +7,8 @@
 {% if artists %}
     {% for artist in artists %}
         <p>
-            {{ artist.name }} | {{ artist.date_created.date() }}
+            <!-- https://stackoverflow.com/questions/20832065/url-for-in-flask-when-using-parameters -->
+            <a href="{{ url_for('artist', name = artist.name) }}">{{ artist.name }}</a> | {{ artist.date_created.date() }}
         </p>
 
     {% endfor %}

@@ -39,9 +39,9 @@ def get_artist_info():
 
 @app.route('/save_search', methods=['POST'])
 def save_artist():
-    artist = session.get('user_search')
-    db.store_artist_data(artist)
-    flash(f'{artist['artist_name']} saved!')
+    artist_to_save = session.get('user_search')
+    db.store_artist_data(artist_to_save)
+    flash(f'{artist_to_save['artist_name']} saved!')
     # TODO replace index with bookmarks.html or artist page
     return redirect(url_for('homepage'))
 
@@ -50,6 +50,7 @@ def bookmarks():
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
             sample = placeholder()
+            # TODO sample.html can (should) be changed to search_results.html - avoid duplication
             return render_template('sample.html',
                                    artist_name=sample['artist_name'],
                                    artist_img=sample['artist_img_url'],
@@ -62,8 +63,14 @@ def bookmarks():
 
         elif request.form.get('action') == "Saved Artists":
             stored_artists = db.get_all_artists()
-            return render_template('bookmarks.html',
-                                   artists=stored_artists)
+            return render_template('bookmarks.html', artists=stored_artists)
+
+@app.route('/artist/<name>')
+def artist(name):
+    artist_data = db.get_artist_data(name)
+    print(artist_data)
+    return render_template('sample.html',
+                           artist_name=name)
 
 def data_constructor(artist_info, event_info, music_video):
     results = {
@@ -78,7 +85,6 @@ def data_constructor(artist_info, event_info, music_video):
         'video_id': music_video['video_id'],
         'video_thumbnail': music_video['thumbnail']
     }
-    print(results)
     return results
 
 if __name__ == '__main__':
