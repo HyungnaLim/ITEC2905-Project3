@@ -44,7 +44,7 @@ def save_artist():
     db.store_artist_data(artist_to_save)
     flash(f'{artist_to_save['artist_name']} saved!')
     # TODO replace index with bookmarks.html or artist page
-    return redirect(url_for('homepage'))
+    return redirect(url_for('artist', name=artist_to_save['artist_name']))
 
 @app.route('/bookmark', methods=['GET', 'POST'])
 def bookmarks():
@@ -78,7 +78,7 @@ def artist(name):
     return render_template('sample.html',
                            artist_name=name,
                            artist_img=chosen_artist.img_url,
-                           artist_genres=genres[0],
+                           artist_genres=genres,
                            artist_tracks=tracks,
                            music_video=db_video['video_title'],
                            music_video_id=db_video['video_id'],
