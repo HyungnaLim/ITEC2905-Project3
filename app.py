@@ -43,7 +43,6 @@ def save_artist():
     artist_to_save = session.get('user_search')
     db.store_artist_data(artist_to_save)
     flash(f'{artist_to_save['artist_name']} saved!')
-    # TODO replace index with bookmarks.html or artist page
     return redirect(url_for('artist', name=artist_to_save['artist_name']))
 
 @app.route('/bookmark', methods=['GET', 'POST'])
@@ -71,7 +70,6 @@ def artist(name):
     chosen_artist = Artist.get(Artist.name == name)
     genres = db.get_genres(chosen_artist)
     tracks = db.get_tracks(chosen_artist)
-    print(tracks)
     db_video = db.get_video(chosen_artist)
     db_events = db.get_events(chosen_artist)
 
@@ -83,7 +81,9 @@ def artist(name):
                            music_video=db_video['video_title'],
                            music_video_id=db_video['video_id'],
                            music_video_thumb=db_video['video_thumbnail'],
-                           events_info=db_events
+                           event_name=db_events['event_name'],
+                           event_date=db_events['event_date'],
+                           event_venue=db_events['event_venue']
                            )
 
 def data_constructor(artist_info, event_info, music_video):

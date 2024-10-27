@@ -23,7 +23,7 @@
         Title: {{ track.title }}<br>
         Album: {{ track.album }}<br>
         Release Date: {{ track.release_date }}<br>
-        <a href="{{ track.spotify_url }}">spotify_url</a>
+        <a href="{{ track.spotify_url }}">{{ track.spotify_url }}</a>
     </p>
     {% endfor %}
 
@@ -40,7 +40,12 @@
 <hr>
 
 <h2>Events</h2>
-<p> {{ events_info }} </p>
+
+    {% for event in events_info %}
+    <p>
+        Event: {{ event_name }} Date: {{ event_date }} Venue: {{ event_venue }}
+    </p>
+    {% endfor %}
 
 <hr>
 

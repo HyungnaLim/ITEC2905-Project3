@@ -3,10 +3,6 @@ from datetime import datetime
 import os
 import logging
 
-# logger = logging.getLogger('peewee')
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.DEBUG)
-
 db_path = os.path.join('database', 'search_results_db.sqlite')
 db = SqliteDatabase(db_path)
 
@@ -197,21 +193,6 @@ def store_music_video_info(artist, video):
     except Exception as error:
         print(f'Error saving music video to database: {error}')
 
-def get_artist_data(name):
-    try:
-        artist = Artist.get(Artist.name == name)
-
-        artist_dict = get_artist(artist)
-        tracks = get_tracks(artist)
-        genres = get_genres(artist)
-        events = get_events(artist)
-        video = get_video(artist)
-
-        artist_info = [artist_dict, tracks, genres, video, events]
-        return artist_info
-    except Exception as e:
-        print(f'{e}')
-
 def get_artist(artist):
     return {
         'artist_name': artist.name,
@@ -219,7 +200,6 @@ def get_artist(artist):
     }
 
 def get_tracks(artist):
-    # tracks = {}
     track_li = []
     for track in artist.tracks:
         a_track = {
@@ -230,7 +210,6 @@ def get_tracks(artist):
             'date_created': track.date_created
         }
         track_li.append(a_track)
-    # tracks['tracks'] = track_li
     return track_li
 
 def get_genres(artist):
@@ -257,30 +236,3 @@ def get_video(artist):
         video['video_id'] = v.video_id
         video['video_thumbnail'] = v.thumbnail_url
     return video
-
-@db.connection_context()
-def main():
-    all_artists = Artist.select()
-    for artist in all_artists:
-        print(f'id: {artist.id}, name: {artist.name}')
-
-    # Check if the artist with id 2 exists and has tracks
-    artist_id = 1
-    try:
-        artist = Artist.get(Artist.id == artist_id)
-        track_list = [track for track in artist.tracks]
-        if not track_list:
-            print(f'no track with id {artist_id}.')
-        else:
-            for track in track_list:
-                print(
-                    f'Title: {track.title}, '
-                    f'Album: {track.album}, '
-                    f'Release Date: {track.release_date}, '
-                    f'Spotify URL: {track.spotify_url}, '
-                    f'Date Created: {track.date_created}')
-    except DoesNotExist as e:
-        print(f'no artist {e}')
-
-if __name__ == '__main__':
-    main()
