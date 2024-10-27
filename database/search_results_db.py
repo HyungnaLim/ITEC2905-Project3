@@ -7,15 +7,13 @@ db_path = os.path.join('database', 'search_results_db.sqlite')
 db = SqliteDatabase(db_path)
 
 class BaseModel(Model):
+
     class Meta:
         database = db
 
-def get_all_artists():
-    return (Artist
-            .select()
-            .order_by(Artist.date_created))
 
 class Artist(BaseModel):
+
     name = CharField(unique=True)
     img_url = CharField()
     date_created = DateTimeField()
@@ -30,6 +28,7 @@ class Artist(BaseModel):
                 .where(Relationship.from_artist == self)
                 .order_by(Artist.name))
 
+
 class Track(BaseModel):
     title = CharField(unique=True)
     album = CharField()
@@ -41,7 +40,9 @@ class Track(BaseModel):
     def __str__(self):
         return f'{self.title}, {self.album}, {self.release_date}, {self.spotify_url}, {self.date_created}'
 
+
 class Genre(BaseModel):
+
     genre_name = CharField(unique=True, null=True)
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='genres')
@@ -49,17 +50,19 @@ class Genre(BaseModel):
     def __str__(self):
         return f'{self.genre_name}, {self.date_created}'
 
+
 class Event(BaseModel):
+
     name = CharField(unique=True, null=True)
-    event_date = DateField()
-    venue = CharField()
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='events')
 
     def __str__(self):
-        return f'{self.name}, {self.event_date}, {self.venue}, {self.date_created}'
+        return f'{self.name}, {self.date_created}'
+
 
 class Video(BaseModel):
+
     video_name = CharField(unique=True)
     video_id = CharField(unique=True)
     thumbnail_url = CharField()
@@ -69,7 +72,9 @@ class Video(BaseModel):
     def __str__(self):
         return f'{self.video_name}, {self.video_id}, {self.thumbnail_url}, {self.date_created}'
 
+
 class Relationship(BaseModel):
+
     from_artist = ForeignKeyField(Artist, backref='relationships')
     to_genre = ForeignKeyField(Genre, backref='related_to')
 
@@ -78,9 +83,11 @@ class Relationship(BaseModel):
             (('from_artist', 'to_genre'), True),
         )
 
+
 def create_tables():
     with db:
         db.create_tables([Artist, Track, Genre, Event, Video, Relationship])
+
 
 def delete_all_tables():
     with db:
@@ -89,6 +96,7 @@ def delete_all_tables():
         Genre.delete().execute()
         Event.delete().execute()
         Video.delete().execute()
+
 
 @db.connection_context()
 def store_artist_data(artist_data):
@@ -101,6 +109,7 @@ def store_artist_data(artist_data):
         store_music_video_info(artist, artist_data)
     except Exception as e:
         print(f'{e}')
+
 
 def store_artist_info(spotify_data):
     artist, created = Artist.get_or_create(
@@ -117,6 +126,7 @@ def store_artist_info(spotify_data):
         print(f'Artist: {artist.name} already in database.')
         return artist
 
+
 def store_track_info(artist, spotify_data):
     for title in spotify_data['tracks']:
         track, created = Track.get_or_create(
@@ -131,6 +141,7 @@ def store_track_info(artist, spotify_data):
             print(f'Track: {track.title} saved!')
         else:
             print(f'Track: {track.title} already in database.')
+
 
 def store_genres(artist, spotify_data):
     for genre in spotify_data['artist_genre']:
@@ -154,16 +165,15 @@ def store_genres(artist, spotify_data):
         else:
             print(f'Genre: {genre} already in database.')
 
+
 def store_events_info(artist, events):
     try:
         for event in events:
             name, created = Event.get_or_create(
-                name=event['event_name'],
+                name=event,
                 defaults={
-                    'event_date': event.event_date,
-                          'venue': event.event_venue,
-                          'date_created': datetime.now(),
-                          'artist': artist
+                    'date_created': datetime.now(),
+                    'artist': artist
                 }
             )
             if created:
@@ -173,6 +183,7 @@ def store_events_info(artist, events):
 
     except Exception as error:
         print(f'Error saving events to database: {error}')
+
 
 def store_music_video_info(artist, video):
     try:
@@ -193,11 +204,20 @@ def store_music_video_info(artist, video):
     except Exception as error:
         print(f'Error saving music video to database: {error}')
 
+
+def get_all_artists():
+
+    return (Artist
+            .select()
+            .order_by(Artist.date_created))
+
+
 def get_artist(artist):
     return {
         'artist_name': artist.name,
         'artist_img_url': artist.img_url,
     }
+
 
 def get_tracks(artist):
     track_li = []
@@ -212,11 +232,14 @@ def get_tracks(artist):
         track_li.append(a_track)
     return track_li
 
+
 def get_genres(artist):
-    genres = []
+    genre_li = []
     for g in artist.genres:
-        genres.append(g.genre_name)
+        genre_li.append(g.genre_name)
+    genres = ', '.join(genre_li)
     return genres
+
 
 def get_events(artist):
     events = []
@@ -228,6 +251,7 @@ def get_events(artist):
         }
         events.append(e)
     return events
+
 
 def get_video(artist):
     video = {}

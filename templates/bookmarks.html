@@ -3,23 +3,35 @@
 
 <!-- https://python-web.teclado.com/section07/lectures/06_jinja2_conditional_statements/#basic-comparisons -->
 <h1>Saved Artists</h1>
-
 {% if artists %}
-    {% for artist in artists %}
-        <p>
-            <!-- https://stackoverflow.com/questions/20832065/url-for-in-flask-when-using-parameters -->
-            <a href="{{ url_for('artist', name = artist.name) }}">{{ artist.name }}</a> | {{ artist.date_created.date() }}
-        </p>
-
-    {% endfor %}
+        <table class="center">
+            <tr>
+                <th>Artist</th>
+                <th>Saved</th>
+            </tr>
+            {% for artist in artists %}
+            <tr>
+                <td>
+                    <!-- https://stackoverflow.com/questions/20832065/url-for-in-flask-when-using-parameters -->
+                    <a href="{{ url_for('artist', name = artist.name) }}">{{ artist.name }}</a>
+                </td>
+                <td>
+                    {{ artist.date_created.date() }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
 
 {% else %}
     No artists saved yet!
-
 {% endif %}
 
 <hr>
 
-<p>Do you want to search for another music artist? <a href="/">Go back to home page</a></p>
+<form method="POST" action="/bookmark">
+    <input type="submit" name="action" value="Sample Page">
+</form>
+
+<p><a href="/">Go back to home page</a></p>
 
 {% endblock %}

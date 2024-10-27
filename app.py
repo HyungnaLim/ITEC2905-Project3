@@ -11,9 +11,11 @@ app = Flask(__name__)
 # https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions
 app.secret_key = b'development_super_secret_key'
 
+
 @app.route('/') # home page
 def homepage():
     return render_template('index.html')
+
 
 @app.route('/get_artist')
 def get_artist_info():
@@ -28,6 +30,7 @@ def get_artist_info():
     music_video = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
     results = data_constructor(artist_info, events_info, music_video)
+    print(results)
     session['user_search'] = results
 
     return render_template('search_result.html',
@@ -38,18 +41,13 @@ def get_artist_info():
                            music_video=music_video,
                            events_info=events_info)
 
-@app.route('/save_search', methods=['POST'])
-def save_artist():
-    artist_to_save = session.get('user_search')
-    db.store_artist_data(artist_to_save)
-    flash(f'{artist_to_save['artist_name']} saved!')
-    return redirect(url_for('artist', name=artist_to_save['artist_name']))
 
 @app.route('/bookmark', methods=['GET', 'POST'])
 def bookmarks():
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
             sample = placeholder()
+            print(sample['event'])
             # TODO sample.html can (should) be changed to search_results.html - avoid duplication
             return render_template('sample.html',
                                    artist_name=sample['artist_name'],
@@ -59,11 +57,20 @@ def bookmarks():
                                    music_video=sample['video_title'],
                                    music_video_id=sample['video_id'],
                                    music_video_thumb=sample['video_thumbnail'],
-                                   events_info=sample['event'][0])
+                                   events=sample['event'])
 
         elif request.form.get('action') == "Saved Artists":
             stored_artists = db.get_all_artists()
             return render_template('bookmarks.html', artists=stored_artists)
+
+
+@app.route('/save_search', methods=['POST'])
+def save_artist():
+    artist_to_save = session.get('user_search')
+    db.store_artist_data(artist_to_save)
+    flash(f'{artist_to_save['artist_name']} saved!')
+    return redirect(url_for('artist', name=artist_to_save['artist_name']))
+
 
 @app.route('/artist/<name>')
 def artist(name):
@@ -72,6 +79,7 @@ def artist(name):
     tracks = db.get_tracks(chosen_artist)
     db_video = db.get_video(chosen_artist)
     db_events = db.get_events(chosen_artist)
+    print(db_events)
 
     return render_template('sample.html',
                            artist_name=name,
@@ -81,25 +89,22 @@ def artist(name):
                            music_video=db_video['video_title'],
                            music_video_id=db_video['video_id'],
                            music_video_thumb=db_video['video_thumbnail'],
-                           event_name=db_events['event_name'],
-                           event_date=db_events['event_date'],
-                           event_venue=db_events['event_venue']
-                           )
+                           events=db_events)
 
-def data_constructor(artist_info, event_info, music_video):
+
+def data_constructor(artist_info, event, music_video):
     results = {
         'artist_name': artist_info.artist,
         'artist_img_url': artist_info.image_url,
         'artist_genre': artist_info.genres,
         'tracks': artist_info.tracks,
-        'event_name': event_info.name,
-        'event_date': event_info.date,
-        'event_venue': event_info.venue,
+        'event': f'Event: {event.name}, Date: {event.date}, Venue: {event.venue}',
         'video_title': music_video['video_title'],
         'video_id': music_video['video_id'],
         'video_thumbnail': music_video['thumbnail']
     }
     return results
+
 
 if __name__ == '__main__':
     app.run()
