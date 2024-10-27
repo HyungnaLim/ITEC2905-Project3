@@ -67,6 +67,7 @@ def bookmarks():
 @app.route('/save_search', methods=['POST'])
 def save_artist():
     artist_to_save = session.get('user_search')
+    print(artist_to_save)
     db.store_artist_data(artist_to_save)
     flash(f'{artist_to_save['artist_name']} saved!')
     return redirect(url_for('artist', name=artist_to_save['artist_name']))
@@ -93,17 +94,21 @@ def artist(name):
 
 
 def data_constructor(artist_info, event, music_video):
-    results = {
-        'artist_name': artist_info.artist,
-        'artist_img_url': artist_info.image_url,
-        'artist_genre': artist_info.genres,
-        'tracks': artist_info.tracks,
-        'event': f'Event: {event.name}, Date: {event.date}, Venue: {event.venue}',
-        'video_title': music_video['video_title'],
-        'video_id': music_video['video_id'],
-        'video_thumbnail': music_video['thumbnail']
-    }
-    return results
+    try:
+        results = {
+            'artist_name': artist_info.artist,
+            'artist_img_url': artist_info.image_url,
+            'artist_genre': artist_info.genres,
+            'tracks': artist_info.tracks,
+            'event': f'{event}',
+            'video_title': music_video['video_title'],
+            'video_id': music_video['video_id'],
+            'video_thumbnail': music_video['thumbnail']
+        }
+        return results
+
+    except Exception as e:
+        print(e)
 
 
 if __name__ == '__main__':

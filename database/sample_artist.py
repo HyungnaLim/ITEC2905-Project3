@@ -8,19 +8,19 @@ def placeholder():
                 'title': 'Never Gonna Give You Up',
                 'album': 'Whenever You Need Somebody',
                 'release_date': '1987-11-12',
-                'spotify_url': 'url_to_song'
+                'spotify_url': 'https://open.spotify.com/track/4PTG3Z6ehGkBFwjybzWkR8'
                 },
                 {
                 'title': 'Together Forever',
                 'album': 'Whenever You Need Somebody',
                 'release_date': '1987-11-12',
-                'spotify_url': 'url_to_song'
+                'spotify_url': 'https://open.spotify.com/track/00isIFJWVpXIQ8HkGICSQp'
                 },
                 {
                 'title': 'Take Me to Your Heart (2023) Remaster',
                 'album': 'Hold Me in Your Arms (Deluxe Edition - 2023 Remaster)',
                 'release_date': '1988',
-                'spotify_url': 'url_to_song'
+                'spotify_url': 'https://open.spotify.com/track/1VpUH3K4UTqgD69QhXYebI'
                 }
             ],
             'event': [

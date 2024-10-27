@@ -102,8 +102,9 @@ def delete_all_tables():
 def store_artist_data(artist_data):
     try:
         create_tables()
+        # artist must be stored as db object for backref to work
         artist = store_artist_info(artist_data)
-        store_track_info(artist, artist_data)   # ARTIST MUST BE STORED AS OBJECT FOR BACKREF TO WORK
+        store_track_info(artist, artist_data)
         store_genres(artist, artist_data)
         store_events_info(artist, artist_data)
         store_music_video_info(artist, artist_data)
@@ -168,21 +169,36 @@ def store_genres(artist, spotify_data):
 
 def store_events_info(artist, events):
     try:
-        for event in events:
-            name, created = Event.get_or_create(
-                name=event,
-                defaults={
-                    'date_created': datetime.now(),
-                    'artist': artist
-                }
-            )
-            if created:
-                print(f'Event: {name.event} saved!')
-            else:
-                print(f'Event: {name.event} already in database.')
+        name, created = Event.get_or_create(
+            name=events['event'],
+            defaults={
+                'date_created': datetime.now(),
+                'artist': artist
+            }
+        )
+        if created:
+            print(f'Event: {name} saved!')
+        else:
+            print(f'Event: {name} already in database.')
 
     except Exception as error:
         print(f'Error saving events to database: {error}')
+    # try:
+    #     for event in events['event']:
+    #         name, created = Event.get_or_create(
+    #             name=event,
+    #             defaults={
+    #                 'date_created': datetime.now(),
+    #                 'artist': artist
+    #             }
+    #         )
+    #         if created:
+    #             print(f'Event: {name} saved!')
+    #         else:
+    #             print(f'Event: {name} already in database.')
+    #
+    # except Exception as error:
+    #     print(f'Error saving events to database: {error}')
 
 
 def store_music_video_info(artist, video):
@@ -244,12 +260,16 @@ def get_genres(artist):
 def get_events(artist):
     events = []
     for event in artist.events:
-        e = {
-            'event_name': event.name,
-            'event_date': event.event_date,
-            'event_venue': event.venue
-        }
-        events.append(e)
+        events.append(event.name)
+        # e = {
+        #     'event': event.name
+        # }
+        # e = {
+        #     'event_name': event.name,
+        #     'event_date': event.event_date,
+        #     'event_venue': event.venue
+        # }
+        # events.append(e)
     return events
 
 
