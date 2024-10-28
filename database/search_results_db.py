@@ -7,13 +7,11 @@ db_path = os.path.join('database', 'search_results_db.sqlite')
 db = SqliteDatabase(db_path)
 
 class BaseModel(Model):
-
     class Meta:
         database = db
 
 
 class Artist(BaseModel):
-
     name = CharField(unique=True)
     img_url = CharField()
     date_created = DateTimeField()
@@ -42,7 +40,6 @@ class Track(BaseModel):
 
 
 class Genre(BaseModel):
-
     genre_name = CharField(unique=True, null=True)
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='genres')
@@ -52,7 +49,6 @@ class Genre(BaseModel):
 
 
 class Event(BaseModel):
-
     name = CharField(unique=True, null=True)
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='events')
@@ -62,7 +58,6 @@ class Event(BaseModel):
 
 
 class Video(BaseModel):
-
     video_name = CharField(unique=True)
     video_id = CharField(unique=True)
     thumbnail_url = CharField()
@@ -74,7 +69,6 @@ class Video(BaseModel):
 
 
 class Relationship(BaseModel):
-
     from_artist = ForeignKeyField(Artist, backref='relationships')
     to_genre = ForeignKeyField(Genre, backref='related_to')
 
@@ -222,7 +216,7 @@ def store_music_video_info(artist, video):
 
 
 def get_all_artists():
-
+    create_tables()
     return (Artist
             .select()
             .order_by(Artist.date_created))
