@@ -3,8 +3,10 @@ from datetime import datetime
 import os
 import logging
 
+logger = logging.getLogger(__name__)
 db_path = os.path.join('database', 'search_results_db.sqlite')
 db = SqliteDatabase(db_path)
+
 
 class BaseModel(Model):
     class Meta:
