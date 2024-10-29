@@ -71,12 +71,9 @@ def response_data_extraction(api_response_data):
     Extract details from json data, format to dict of video title, id, and thumbnail.
 
     Return:
-        A dict mapping keys to video details. For example:
-        {'video_title': video_title,
-        'video_id': video_id,
-        'thumbnail': video_thumbnail}
+        A dict mapping keys to video details.
     Raises:
-        KeyError: YouTube data extraction mismatch
+        KeyError: YouTube data extraction mismatch.
     """
     try:
         for data in api_response_data.get('items', []):
@@ -88,7 +85,7 @@ def response_data_extraction(api_response_data):
             return chosen_video
 
     except KeyError as e:
-        raise YoutubeError(f'YouTube json data extraction error: {e}')
+        raise YoutubeError(f'YouTube data extraction error: {e}')
 
 
 class YoutubeError(Exception):
