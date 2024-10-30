@@ -28,10 +28,11 @@ def get_artist_info():
     artist_name = request.args.get('user_search_query')
 
     try:
-        artist_info = spotify.main(artist_name)
-        events_info = events.main(artist_info.artist)
+        artist_info, spotify_error = spotify.main(artist_name)
+        if spotify_error:
+            return render_template('error.html', message=spotify_error)
 
-        # artist_info, error_message = spotify.main(artist_name)
+        events_info = events.main(artist_info.artist)
         # events_info, error_message = events.main(artist_info.artist)
 
         # api return format: (api_data, None)
