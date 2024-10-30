@@ -45,6 +45,9 @@ def get_artist_info():
         results = data_constructor(artist_info, events_info, music_video)
         session['user_search'] = results
 
+        if artist_name.lower() != artist_info.artist.lower():
+            flash('Displaying closest match to search term')
+
         return render_template('search_result.html',
                                artist_name=artist_info.artist,
                                artist_img=artist_info.image_url,
