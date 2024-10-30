@@ -9,6 +9,11 @@
 </head>
 <body>
 
+<!-- https://flask.palletsprojects.com/en/2.3.x/patterns/flashing/#simple-flashing -->
+    {% for msg in get_flashed_messages() %}
+        <i>{{ msg }}</i>
+    {% endfor %}
+
     {% block content %}
     {% endblock %}
 
