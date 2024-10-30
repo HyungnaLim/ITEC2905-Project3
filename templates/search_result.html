@@ -4,10 +4,13 @@
 
 <h1>{{ artist_name }} </h1>
 
+{% if artist_img %}
 <p> <img src="{{ artist_img }}"
          width="400"
          height="400">
 </p>
+{% else %}
+{% endif %}
 
 <hr>
 

@@ -45,8 +45,7 @@ def get_artist_info(auth, search_artist):
     artist = search_json['artists']['items'][0]
     artist_name = artist['name']
     artist_id = artist['id']
-    artist_image_url = artist['images'][0]['url'] if artist['images'] \
-        else f'https://dummyimage.com/400x400/ffefd5/8f8f8f.png&text=No+Image+Found'
+    artist_image_url = artist['images'][0]['url'] if artist['images'] else None
     artist_genres = artist['genres'] if artist['genres'] else ['No genre found for this artist']
 
     return artist_name, artist_id, artist_image_url, artist_genres
