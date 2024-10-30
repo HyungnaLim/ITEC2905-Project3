@@ -15,7 +15,11 @@
 <hr>
 
 <h2>Genre</h2>
+{% if artist_genres %}
 <p> {{ artist_genres }} </p>
+{% else %}
+<p>No artist genre found</p>
+{% endif %}
 <hr>
 
 <h2>Top Tracks of {{ artist_name }}</h2>
