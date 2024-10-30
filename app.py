@@ -49,9 +49,9 @@ def get_artist_info():
                                artist_name=artist_info.artist,
                                artist_img=artist_info.image_url,
                                artist_genres=artist_info.genres_str(),
-                               artist_track_one=artist_info.tracks[0],
-                               artist_track_two=artist_info.tracks[1],
-                               artist_track_three=artist_info.tracks[2],
+                               artist_track_one=artist_info.tracks[0] if len(artist_info.tracks) > 0 else None,
+                               artist_track_two=artist_info.tracks[1] if len(artist_info.tracks) > 1 else None,
+                               artist_track_three=artist_info.tracks[2] if len(artist_info.tracks) > 2 else None,
                                music_video=music_video,
                                events_info=events_info)
 
