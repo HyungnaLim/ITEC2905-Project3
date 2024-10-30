@@ -61,9 +61,6 @@ def get_top_tracks_by_artist_id(auth, artist_id):
         raise Exception('The app has exceeded its rate limits.')
 
     tracks_json = tracks_res.json()
-    print(tracks_json)
-
-    # TODO: error handling for having less than 3 tracks or no track
     tracks = tracks_json.get('tracks', [])
     if not tracks:
         # no top tracks
