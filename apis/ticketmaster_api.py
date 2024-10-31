@@ -1,7 +1,9 @@
 import requests
+from dotenv import load_dotenv
 import os
 import urllib.parse
 import logging
+load_dotenv()
 
 class TicketmasterEvent:
     def __init__(self, name, date, venue):
