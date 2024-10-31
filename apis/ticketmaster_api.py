@@ -20,7 +20,11 @@ class TicketmasterAPI:
 
     def search_events(self, search_term):
         encoded_search_term = urllib.parse.quote(search_term)
-        events_url = f'https://app.ticketmaster.com/discovery/v2/events.json?apikey={self.api_key}&keyword={encoded_search_term}'
+        events_url = (
+            f'https://app.ticketmaster.com/discovery/v2/events.json'
+            f'?apikey={self.api_key}'
+            f'&keyword={encoded_search_term}'
+            f'&size=5')
 
         try:
             response = requests.get(events_url)
