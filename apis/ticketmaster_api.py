@@ -49,7 +49,7 @@ class TicketmasterAPI:
                     events.append(TicketmasterEvent(name, date, venue))
                 return events, None  # No error
             else:
-                return [], "No events found."  # Return empty list and message
+                return None, "No events found."  # Return empty list and message
         except Exception as e:
             logging.exception(e)
             return None, f'Error processing events: {e}'
