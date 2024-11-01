@@ -1,7 +1,10 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import patch, call
-from apis.youtube_api import main, YoutubeError, get_youtube_video, response_data_extraction
+from apis.youtube_api import main, YoutubeError, get_youtube_video, response_data_extraction, service_name
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
+from googleapiclient.http import HttpMock
 
 
 class TestMain(TestCase):
@@ -16,7 +19,17 @@ class TestMain(TestCase):
 
         # https://docs.python.org/3/library/unittest.mock.html#unittest.mock.Mock.return_value
         # dict represents json response from youtube api call
-        mock_json_response = {'title': 'video title'}
+        mock_json_response = {
+            'items': [
+                {
+                    'snippet': {
+                        'title': 'video title',
+                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
+                    'id': { 'videoId': 'video_id' }}
+                }
+            ]
+        }
+
         mock_get_youtube_video.return_value = mock_json_response
 
         # return key:value extracted from json
@@ -25,16 +38,20 @@ class TestMain(TestCase):
 
         music_video, youtube_error = main(artist_info)
 
+        # returned music video should match extracted data
         self.assertEqual(music_video, mock_extract_dict)
+
+        # youtube error should return none
         self.assertIsNone(youtube_error)
+
+        # passed info to call youtube api
         mock_get_youtube_video.assert_called_once_with(artist_info)
         mock_response_data_extraction.assert_called_once_with(mock_json_response)
 
     @patch('apis.youtube_api.get_youtube_video')
     @patch('apis.youtube_api.response_data_extraction')
-    def test_main_error(self, mock_extract, mock_get_video):
+    def test_main_raised_error(self, mock_extract, mock_get_video):
 
-        # artist info from spotify apigit 
         artist_info = 'artist name track title'
 
         # return error message when raised
@@ -47,32 +64,86 @@ class TestMain(TestCase):
         mock_get_video.assert_called_once_with(artist_info)
         mock_extract.assert_not_called()
 
+
+class TestGetYouTubeVideo(TestCase):
+
+    @patch('apis.youtube_api.build')
+    def test_get_youtube_video(self, mock_build):
+        self.http = HttpMock({
+            'items': [
+                {
+                    'snippet': {
+                        'title': 'video title',
+                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
+                    'id': { 'videoId': 'video_id' }}
+                }
+            ]
+        }, {'status': '200'})
+
+        mock_build = build('youtube', 'v3', http=self.http, static_discovery=False)
+
+        
+
+
+    # def test_full_featured(self):
+    #     # Zoo should exercise all discovery facets
+    #     # and should also have no future.json file.
+    #     self.http = HttpMock(datafile("zoo.json"), {"status": "200"})
+    #     zoo = build("zoo", "v1", http=self.http, static_discovery=False)
+    #     self.assertTrue(getattr(zoo, "animals"))
     #
-    #     # call main with tuple
-    #     music_video, youtube_error = main(artist_info)
-    #
-    #     # youtube error should return None
-    #     self.assertIsNone(youtube_error)
-    #     # passed artist info on to get youtube video
-    #     mock_get_youtube_video.assert_called_once_with(artist_info)
-    #
-    #
-    # @patch('apis.youtube_api.response_data_extraction')
-    # def test_main_response_data_extraction(self, mock_response_data_extraction):
-    #     artist_info = 'artist name track title'
-    #     mock_response = 'json_response'
-    #     # youtube video extracted from json data
-    #     mock_youtube_video = 'dict of video'
-    #     # return value should be the of video data
-    #     mock_response_data_extraction.side_effect = mock_youtube_video
-    #
-    #     music_video, youtube_error = main(artist_info)
-    #
-    #     # music video should be the extracted and formatted video data
-    #     self.assertEqual(music_video, mock_response_data_extraction)
-    #     self.assertIsNone(youtube_error)
-    #     # passed json response on to data extraction
-    #     mock_response_data_extraction.assert_called_once_with(mock_response)
+    #     request = zoo.animals().list(name="bat", projection="full")
+    #     parsed = urllib.parse.urlparse(request.uri)
+    #     q = urllib.parse.parse_qs(parsed.query)
+    #     self.assertEqual(q["name"], ["bat"])
+    #     self.assertEqual(q["projection"], ["full"])
+    # def test_discovery_with_valid_version_uses_v1(self):
+    #     http = HttpMockSequence(
+    #         [
+    #             ({"status": "200"}, read_datafile("zoo.json", "rb")),
+    #         ]
+    #     )
+    #     build(
+    #         "zoo",
+    #         version="v123",
+    #         http=http,
+    #         cache_discovery=False,
+    #         static_discovery=False,
+    #     )
+    #     validate_discovery_requests(self, http, "zoo", "v123", V1_DISCOVERY_URI)
+        artist_info = 'artist name track title'
+        # credentials = { service_name: 'youtube', service_version: 'v3', api_key: '123' }
+        #
+        # mock_api_request = mock_service.search().list().execute().return_value
+        mock_api_request.return_value = {
+            'items': [
+                {
+                    'snippet': {
+                        'title': 'video title',
+                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
+                    'id': { 'videoId': 'video_id' }}
+                }
+            ]
+        }
+
+        mock_build.return_value.__enter__.return_value = mock_service
+
+        response = get_youtube_video(artist_info)
+
+        self.assertEqual(response, {
+            'items': [
+                {
+                    'snippet': {
+                        'title': 'video title',
+                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
+                    'id': { 'videoId': 'video_id' }}
+                }
+            ]
+        })
+
+        mock_build.assert_called_once_with(mock_service)
+
+
 
 
 if __name__ == '__main__':
