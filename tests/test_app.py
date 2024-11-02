@@ -41,7 +41,7 @@ class TestCase(unittest.TestCase):
 
     def test_get_artist_info(self):
         response = self.app.get('/get_artist')
-        self.assertEqual(response.status_code, 200git )
+        self.assertEqual(response.status_code, 200)
         artist_info = self.fake_api.main('spotify', 'Test Artist')
         self.assertGreaterEqual(len(artist_info.tracks), 3, "Tracks to test")
 
