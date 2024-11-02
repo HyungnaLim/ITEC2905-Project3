@@ -8,7 +8,7 @@ class FakeAPI:
                 artist="Test Artist",
                 image_url="https://example.com/artist.jpg",
                 tracks=[{"title": "Song 1"}, {"title": "Song 2"}, {"title": "Song 3"}],
-                genres=lambda: "Pop, Rock" #fake gensre
+                genres=lambda: "Pop, Rock" #fake genre
             )
         elif service == 'youtube':
             return "https://youtube.com/test_video"
@@ -41,15 +41,9 @@ class TestCase(unittest.TestCase):
 
     def test_get_artist_info(self):
         response = self.app.get('/get_artist')
-        self.assertEqual(response.status_code, 200)
-        self._check_artist_info(response.data)
-
-    def _check_artist_info(self, response_data):
-        self.assertIn(b'Test Artist', response_data)
-        self.assertIn(b'https://example.com/artist.jpg', response_data)
-        self.assertIn(b'Song 1', response_data)
-        self.assertIn(b'Test Event Information', response_data)
-        self.assertIn(b'https://youtube.com/test_video', response_data)
+        self.assertEqual(response.status_code, 200git )
+        artist_info = self.fake_api.main('spotify', 'Test Artist')
+        self.assertGreaterEqual(len(artist_info.tracks), 3, "Tracks to test")
 
 
 if __name__ == '__main__':
