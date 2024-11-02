@@ -37,7 +37,7 @@ def get_artist_info(auth, search_artist):
 
     search_json = search_res.json()
 
-    print(search_json)
+    # print(search_json)
 
     if not search_json.get('artists', {}).get('items'):
         raise Exception('No matching artist found.')
@@ -61,7 +61,7 @@ def get_top_tracks_by_artist_id(auth, artist_id):
         raise Exception('The app has exceeded its rate limits.')
 
     tracks_json = tracks_res.json()
-    print(tracks_json)
+    # print(tracks_json)
 
     # TODO: error handling for having less than 3 tracks or no track
     tracks = tracks_json.get('tracks', [])

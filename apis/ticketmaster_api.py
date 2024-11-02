@@ -1,7 +1,9 @@
 import requests
+from dotenv import load_dotenv
 import os
 import urllib.parse
 import logging
+load_dotenv()
 
 class TicketmasterEvent:
     def __init__(self, name, date, venue):
@@ -18,7 +20,11 @@ class TicketmasterAPI:
 
     def search_events(self, search_term):
         encoded_search_term = urllib.parse.quote(search_term)
-        events_url = f'https://app.ticketmaster.com/discovery/v2/events.json?apikey={self.api_key}&keyword={encoded_search_term}'
+        events_url = (
+            f'https://app.ticketmaster.com/discovery/v2/events.json'
+            f'?apikey={self.api_key}'
+            f'&keyword={encoded_search_term}'
+            f'&size=5')
 
         try:
             response = requests.get(events_url)
@@ -43,7 +49,7 @@ class TicketmasterAPI:
                     events.append(TicketmasterEvent(name, date, venue))
                 return events, None  # No error
             else:
-                return [], "No events found."  # Return empty list and message
+                return None, "No events found."  # Return empty list and message
         except Exception as e:
             logging.exception(e)
             return None, f'Error processing events: {e}'
