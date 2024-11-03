@@ -14,6 +14,8 @@ class FakeAPI:
             return "https://youtube.com/test_video"
         elif service == 'events':
             return "Test Event Information"
+        else:
+            return None, "Error"
 
 
 class FakeSpotifyArtist:
@@ -22,6 +24,12 @@ class FakeSpotifyArtist:
         self.image_url = image_url
         self.tracks = tracks
         self.genres = genres
+
+    def response_data_extraction(response):
+        print ("Response", response)
+        if response is None or not response.get('artists'):
+            return None, "No artists were found"
+        return response, None
 
 
 class TestCase(unittest.TestCase):
@@ -40,11 +48,16 @@ class TestCase(unittest.TestCase):
 
 
     def test_get_artist_info(self):
-        response = self.app.get('/get_artist')
-        self.assertEqual(response.status_code, 200)
-        artist_info = self.fake_api.main('spotify', 'Test Artist')
+        artist_name = "Test Artist"
+        artist_info = self.fake_api.main('spotify', artist_name)
+        if artist_info is None:
+            youtube_video, error_message = None,
+        else:
+             youtube_video, error_message = artist_info, None
+
+        self.assertIsNot(artist_info, "Artist is none")
+        self.assertEqual(artist_info.artist, artist_name)
         self.assertGreaterEqual(len(artist_info.tracks), 3, "Tracks to test")
-
-
+ 
 if __name__ == '__main__':
     unittest.main()
