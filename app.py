@@ -32,18 +32,23 @@ def get_artist_info():
         if spotify_error:
             return render_template('error.html', message=spotify_error)
 
-        events_info = events.main(artist_info.artist)
-        # events_info, error_message = events.main(artist_info.artist)
+        # events_info = events.main(artist_info.artist)
+        events_info, error_message = events.main(artist_info.artist)
+        if error_message:
+            return render_template('error.html', message=error_message)
 
         # api return format: (api_data, None)
-        music_video, error_message = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+        music_video, youtube_error_message = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
 
         # first if-clause will trigger if api returns (None, error_message)
-        if error_message:
+        if youtube_error_message:
             return render_template('error.html', message=error_message)
 
         results = data_constructor(artist_info, events_info, music_video)
         session['user_search'] = results
+
+        if artist_name.lower() != artist_info.artist.lower():
+            flash('Displaying closest match to search term')
 
         return render_template('search_result.html',
                                artist_name=artist_info.artist,

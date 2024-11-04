@@ -37,7 +37,7 @@ def get_artist_info(auth, search_artist):
 
     search_json = search_res.json()
 
-    print(search_json)
+    # print(search_json)
 
     if not search_json.get('artists', {}).get('items'):
         raise Exception('No matching artist found.')
