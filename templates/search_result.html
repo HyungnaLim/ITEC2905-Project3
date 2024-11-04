@@ -4,34 +4,55 @@
 
 <h1>{{ artist_name }} </h1>
 
+{% if artist_img %}
 <p> <img src="{{ artist_img }}"
          width="400"
          height="400">
 </p>
+{% else %}
+{% endif %}
 
 <hr>
 
 <h2>Genre</h2>
+{% if artist_genres %}
 <p> {{ artist_genres }} </p>
+{% else %}
+<p>No genre found for this artist</p>
+{% endif %}
 <hr>
 
 <h2>Top Tracks of {{ artist_name }}</h2>
+<!-- if else statements for track information -->
+{% if artist_track_one %}
 <p>
     Title : {{ artist_track_one['title'] }}<br>
     Album : {{ artist_track_one['album'] }}<br>
     Release Date: {{ artist_track_one['release date'] }}<br>
     <a href ="{{ artist_track_one['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
+</p>
+{% else %}
+    <p>No tracks available for this artist.</p>
+{% endif %}
+
+{% if artist_track_two %}
+<p>
     <br>
     Title : {{ artist_track_two['title'] }}<br>
     Album : {{ artist_track_two['album'] }}<br>
     Release Date: {{ artist_track_two['release date'] }}<br>
     <a href ="{{ artist_track_two['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
-    <br>
+</p>
+{% endif %}
+
+{% if artist_track_three %}
+<p>
     Title : {{ artist_track_three['title'] }}<br>
     Album : {{ artist_track_three['album'] }}<br>
     Release Date: {{ artist_track_three['release date'] }}<br>
     <a href ="{{ artist_track_three['spotify url'] }}" target='_black'>Listen on Spotify</a><br>
 </p>
+{% endif %}
 <hr>
 
 <h2>{{ music_video.video_title }}</h2>
