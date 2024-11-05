@@ -40,12 +40,31 @@
 <hr>
 
 <h2>Events</h2>
+{% if events %}
+        <table class="center" style="width:30%">
+            <tr>
+                <th>Event</th>
+                <th>Date</th>
+                <th>Venue</th>
+            </tr>
+            {% for event in events %}
+            <tr>
+                <td>
+                    {{ event['name'] }}
+                </td>
+                <td>
+                    {{ event['date'] }}
+                </td>
+                <td>
+                    {{ event['venue'] }}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
 
-    {% for event in events %}
-    <p>
-        {{ event }}
-    </p>
-    {% endfor %}
+{% else %}
+    No events found
+{% endif %}
 
 <hr>
 
