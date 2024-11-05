@@ -1,5 +1,5 @@
 # Discover Artists!
-- Uses Spotify, YouTube, and Ticketmaster APIs.
+- Uses <a ref="https://developer.spotify.com/documentation/web-api">Spotify</a>, <a ref="https://developers.google.com/youtube/v3/quickstart/python">YouTube</a>, and <a ref="https://developer.ticketmaster.com/products-and-docs/apis/discovery-api/v2/">Ticketmaster</a> APIs.
 - This app allows users to search for music artists and view detailed information about them.
 - Search result displays artist name, profile picture, genre, top tracks, music video for top track, related events
 - If an exact match isn’t found, the app will display the closest matching artist to the search term.
@@ -16,9 +16,9 @@
 - **SPOTIFY_ID** : Your client ID
 - **SPOTIFY_SECRET** : Your client secret (click 'View client secret')
 
-### Youtube
+### Youtube:
 
-### Ticketmaster
+### Ticketmaster:
 
 
 ---
