@@ -6,15 +6,16 @@ This module uses Spotify API to search and get artist data.
 Detailed documentation of API: https://developer.spotify.com/documentation/web-api
 """
 
+# get environment variables for client credentials from OS
+client_id = os.environ.get('SPOTIFY_ID')
+client_secret = os.environ.get('SPOTIFY_SECRET')
+
 def get_token():
     """
     SET ENVIRONMENT VARIABLES 'SPOTIFY_ID' AND 'SPOTIFY_SECRET' TO MAKE THIS CODE WORK. (setup guide in README.md)
     Make a request to get an access token using the environment variables from OS.
     Return a token to use Spotify API. Raise exception if the request is not successful.
     """
-    client_id = os.environ.get('SPOTIFY_ID')
-    client_secret = os.environ.get('SPOTIFY_SECRET')
-
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     grant_type = {'grant_type': 'client_credentials', 'client_id': client_id, 'client_secret': client_secret}
     token_res = requests.post('https://accounts.spotify.com/api/token', headers=headers, data=grant_type)
