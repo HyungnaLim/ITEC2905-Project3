@@ -15,12 +15,14 @@ def get_token():
     # get environment variables for client credentials from OS
     client_id = os.environ.get('SPOTIFY_ID')
     client_secret = os.environ.get('SPOTIFY_SECRET')
+    if not client_id or not client_secret:
+        raise Exception('could not find environment variables, check your OS environment variables')
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
     grant_type = {'grant_type': 'client_credentials', 'client_id': client_id, 'client_secret': client_secret}
     token_res = requests.post('https://accounts.spotify.com/api/token', headers=headers, data=grant_type)
     if token_res.status_code != 200:
-        raise Exception(f'could not get valid token, check your client credentials.')
+        raise Exception('could not get valid token, check your client credentials.')
 
     token_json = token_res.json()
     token_type = token_json['token_type']
