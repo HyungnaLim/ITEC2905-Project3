@@ -1,4 +1,11 @@
-# ITEC2905-Project3
+# Discover Artists!
+- Uses Spotify, YouTube, and Ticketmaster APIs.
+- This app allows users to search for music artists and view detailed information about them.
+- Search result displays artist name, profile picture, genre, top tracks, music video for top track, related events
+- If an exact match isn’t found, the app will display the closest matching artist to the search term.
+- Some information may not be displayed if it is not found from API.
+
+---
 
 ## Environment Variables
 
@@ -30,6 +37,7 @@
 `set FLASK_DEBUG=1`
 5. Run the application:
 `flask run`
+6. App will be running on http://127.0.0.1:5000
 
 
 ### Mac/Linux:
@@ -45,6 +53,7 @@
 5. Run the application:
 `flask run`
 (if not working try: `python app.py`)
+6. App will be running on http://127.0.0.1:5000
 
 ---
 
