@@ -67,7 +67,7 @@ def get_youtube_video(search_term):
             }
     """
     try:
-        with (build(service_name, service_version, developerKey='AIzaSyDwqLyFMv40cYjRW8jUEQyBgD-nvxR_PwY')
+        with (build(service_name, service_version, developerKey=api_key)
               as request):
             response = request.search().list(
                     part='snippet',
