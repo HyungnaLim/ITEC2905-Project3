@@ -1,8 +1,9 @@
 """Program to search YouTube for videos.
 
-Uses Google API Python Client to build query, then search YouTube for videos with a given search term.
-Requires valid API token to authenticate client. Returns data for video or error message.
+This program uses Google API Python Client to build queries and search YouTube for videos using a given search term.
+It requires a valid API token to authenticate the client. The program returns data for the video or an error message.
 """
+
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
@@ -11,6 +12,7 @@ import html
 import logging
 import os
 load_dotenv()
+
 
 service_name = 'youtube'
 service_version = 'v3'
@@ -22,17 +24,16 @@ def main(artist_info):
 
     Pass search string to the YouTube call, then pass the response to extract music video data.
 
-    Return:
-        tuple - A tuple containing either:
+    Returns:
+        A tuple containing either:
         - (video_data, None) if successful, where video data is a dictionary.
         - (None, error_message) if error raised, where error_message describes the error.
+        For example:
 
-    Example:
         >main('The Beatles Here Comes The Sun')
-        return ({
-            'video_title': 'The Beatles - Here Comes The Sun (2019 Mix)',
-            'video_id': 'KQetemT1sWc',
-            'thumbnail': 'https://i.ytimg.com/vi/KQetemT1sWc/hqdefault.jpg'}, None)
+        return ({'video_title': 'The Beatles - Here Comes The Sun (2019 Mix)',
+                 'video_id': 'KQetemT1sWc',
+                 'thumbnail': 'https://i.ytimg.com/vi/KQetemT1sWc/hqdefault.jpg'}, None)
     """
     try:
         response = get_youtube_video(artist_info)
@@ -51,14 +52,12 @@ def get_youtube_video(search_term):
     Args:
         search_term: string used to search for the video.
 
-    Return:
-        dict: JSON formatted response containing video data.
+    Returns:
+        A JSON formatted response containing video data.
+        For example:
 
-    Example:
         >get_youtube_video('The Beatles Here Comes The Sun')
-        return {
-            'items':
-                [
+        return {'items': [
                     {
                         'snippet': {'title': 'The Beatles - Here Comes The Sun (2019 Mix)'},
                         'id': {'videoId': 'KQetemT1sWc'},
@@ -95,19 +94,19 @@ def response_data_extraction(api_response_data):
     Args:
         api_response_data: JSON data from YouTube API.
 
-    Return:
-        dict: A dictionary containing video title, video ID, and thumbnail url.
+    Returns:
+        A dictionary containing video title, video ID, and thumbnail url.
+        For example:
 
-    Raises:
-        YoutubeError: If there is a Key error - mismatch in extracting YouTube data.
-
-    Example:
         >response_data_extraction(api_response_data)
         {
             'video_title': 'The Beatles - Here Comes The Sun (2019 Mix)',
             'video_id': 'KQetemT1sWc',
             'thumbnail': 'https://i.ytimg.com/vi/KQetemT1sWc/hqdefault.jpg'
         }
+
+    Raises:
+        YoutubeError: If there is a Key error when extracting YouTube data.
     """
     try:
         for data in api_response_data.get('items', []):
