@@ -57,14 +57,15 @@ def get_youtube_video(search_term):
     Example:
         >get_youtube_video('The Beatles Here Comes The Sun')
         return {
-                    'items': [
-                        {
-                            'snippet': { 'title': 'The Beatles - Here Comes The Sun (2019 Mix)' },
-                            'id': { 'videoId': 'KQetemT1sWc' },
-                            'snippet': { 'thumbnails': { 'high': { 'url': 'thumbnail url' }}}
-                        }
-                    ]
-                }
+            'items':
+                [
+                    {
+                        'snippet': {'title': 'The Beatles - Here Comes The Sun (2019 Mix)'},
+                        'id': {'videoId': 'KQetemT1sWc'},
+                        'snippet': {'thumbnails': { 'high': { 'url': 'thumbnail url'}}}
+                    }
+                ]
+            }
     """
     try:
         with (build(service_name, service_version, developerKey='AIzaSyDwqLyFMv40cYjRW8jUEQyBgD-nvxR_PwY')
@@ -89,14 +90,24 @@ def get_youtube_video(search_term):
 
 
 def response_data_extraction(api_response_data):
-    """Return video details.
+    """Return video details extracted from JSON data.
 
-    Extract details from json data, format to dict of video title, id, and thumbnail.
+    Args:
+        api_response_data: JSON data from YouTube API.
 
     Return:
-        A dict mapping keys to video details.
+        dict: A dictionary containing video title, video ID, and thumbnail url.
+
     Raises:
-        KeyError: YouTube data extraction mismatch.
+        YoutubeError: If there is a Key error - mismatch in extracting YouTube data.
+
+    Example:
+        >response_data_extraction(api_response_data)
+        {
+            'video_title': 'The Beatles - Here Comes The Sun (2019 Mix)',
+            'video_id': 'KQetemT1sWc',
+            'thumbnail': 'https://i.ytimg.com/vi/KQetemT1sWc/hqdefault.jpg'
+        }
     """
     try:
         for data in api_response_data.get('items', []):
@@ -112,5 +123,8 @@ def response_data_extraction(api_response_data):
 
 
 class YoutubeError(Exception):
-    """Handle YouTube errors."""
+    """Handle YouTube errors.
+
+    Raised when an error occurs while processing YouTube API data.
+    """
     pass
