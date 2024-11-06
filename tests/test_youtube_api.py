@@ -1,3 +1,4 @@
+import os
 import unittest
 from unittest import TestCase
 from unittest.mock import patch, call
@@ -7,6 +8,17 @@ from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 from googleapiclient.http import HttpMock
 
 # https://github.com/googleapis/google-api-python-client/tree/main/tests
+
+# directory to json file
+DATA_DIR = os.path.join(os.path.dirname(__file__), 'resources')
+
+def datafile(filename):
+    return os.path.join(DATA_DIR, filename)
+
+def read_datafile(filename, mode='r'):
+    with open(datafile(filename), mode=mode) as f:
+        return f.read()
+
 
 class TestMain(TestCase):
 
@@ -18,19 +30,7 @@ class TestMain(TestCase):
         # artist info from spotify api
         artist_info = 'artist name track title'
 
-        # https://docs.python.org/3/library/unittest.mock.html#unittest.mock.Mock.return_value
-        # dict represents json response from youtube api call
-        mock_json_response = {
-            'items': [
-                {
-                    'snippet': {
-                        'title': 'video title',
-                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
-                    'id': { 'videoId': 'video_id' }}
-                }
-            ]
-        }
-
+        mock_json_response = read_datafile('youtube.json')
         mock_get_youtube_video.return_value = mock_json_response
 
         # return key:value extracted from json
@@ -70,16 +70,7 @@ class TestGetYouTubeVideo(TestCase):
 
     @patch('apis.youtube_api.build')
     def test_get_youtube_video(self, mock_build):
-        self.http = HttpMock({
-            'items': [
-                {
-                    'snippet': {
-                        'title': 'video title',
-                        'thumbnails': { 'high': { 'url': 'thumb_url' }},
-                    'id': { 'videoId': 'video_id' }}
-                }
-            ]
-        }, {'status': '200'})
+        self.http = HttpMock(datafile('youtube.json'), {'status': '200'})
 
         mock_build = build('youtube', 'v3', http=self.http, static_discovery=False)
 
