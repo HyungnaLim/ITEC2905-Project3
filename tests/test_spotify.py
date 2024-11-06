@@ -18,7 +18,7 @@ class TestSpotify(unittest.TestCase):
 
 
     # Check get_token() with no environment variables
-    @patch.dict('os.environ', {'SPOTIFY_ID': '', 'SPOTIFY_SECRET': ''})
+    @patch.dict('os.environ', {}, clear=True)
     def test_no_env(self):
         with self.assertRaises(Exception) as ex_context:
             get_token()
