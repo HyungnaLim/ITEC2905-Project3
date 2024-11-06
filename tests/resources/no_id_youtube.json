@@ -1,0 +1,15 @@
+{
+  "items": [
+    {
+      "id": {},
+      "snippet": {
+        "title": "video title",
+        "thumbnails": {
+          "high": {
+            "url": "thumb url"
+          }
+        }
+      }
+    }
+  ]
+}
