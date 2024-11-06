@@ -11,6 +11,7 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 # https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions
+# app.secret_key = b'SESSION_KEY'
 app.secret_key = b'development_super_secret_key'
 
 
