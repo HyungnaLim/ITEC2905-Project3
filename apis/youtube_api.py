@@ -20,9 +20,9 @@ api_key = os.environ.get('DEVELOPER_KEY')
 def main(artist_info):
     """Return video data from search.
 
-    Pass search string to YouTube call, then pass response to extract music video data.
+    Pass search string to the YouTube call, then pass the response to extract music video data.
 
-    Returns:
+    Return:
         tuple - A tuple containing either:
         - (video_data, None) if successful, where video data is a dictionary.
         - (None, error_message) if error raised, where error_message describes the error.
@@ -46,12 +46,25 @@ def main(artist_info):
 
 
 def get_youtube_video(search_term):
-    """Return json response data from YouTube search.
+    """Return JSON response data from YouTube search.
 
     Args:
-        search_term: string used to search for video.
+        search_term: string used to search for the video.
+
     Return:
-        json formatted response.
+        dict: JSON formatted response containing video data.
+
+    Example:
+        >get_youtube_video('The Beatles Here Comes The Sun')
+        return {
+                    'items': [
+                        {
+                            'snippet': { 'title': 'The Beatles - Here Comes The Sun (2019 Mix)' },
+                            'id': { 'videoId': 'KQetemT1sWc' },
+                            'snippet': { 'thumbnails': { 'high': { 'url': 'thumbnail url' }}}
+                        }
+                    ]
+                }
     """
     try:
         with (build(service_name, service_version, developerKey='AIzaSyDwqLyFMv40cYjRW8jUEQyBgD-nvxR_PwY')
