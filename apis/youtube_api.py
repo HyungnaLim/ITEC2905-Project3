@@ -57,6 +57,7 @@ def get_youtube_video(search_term):
                     fields=f'items(snippet/title),items(id/videoId),items(snippet/thumbnails/high/url)'
                 ).execute()
 
+        print(response)
         return response
 
     except (UnknownApiNameOrVersion, HttpError) as e:
