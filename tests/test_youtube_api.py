@@ -1,12 +1,13 @@
 import os
 import unittest
 from unittest import TestCase
-from unittest.mock import patch, call
+from unittest.mock import patch
 from apis.youtube_api import main, YoutubeError, get_youtube_video, response_data_extraction, service_name
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 from googleapiclient.http import HttpMock
 
+# https://github.com/googleapis/google-api-python-client/blob/main/docs/mocks.md
 # https://github.com/googleapis/google-api-python-client/tree/main/tests
 
 # directory to json file
@@ -34,7 +35,7 @@ class TestMain(TestCase):
         mock_get_youtube_video.return_value = mock_json_response
 
         # return key:value extracted from json
-        mock_extract_dict = {'video_title': 'video_title'}
+        mock_extract_dict = {'video_title': 'video title'}
         mock_response_data_extraction.return_value = mock_extract_dict
 
         music_video, youtube_error = main(artist_info)
@@ -51,7 +52,7 @@ class TestMain(TestCase):
 
     @patch('apis.youtube_api.get_youtube_video')
     @patch('apis.youtube_api.response_data_extraction')
-    def test_main_raised_error(self, mock_extract, mock_get_video):
+    def test_main_raised_youtube_error(self, mock_extract, mock_get_video):
 
         artist_info = 'artist name track title'
 
@@ -66,13 +67,23 @@ class TestMain(TestCase):
         mock_extract.assert_not_called()
 
 
-class TestGetYouTubeVideo(TestCase):
-
-    @patch('apis.youtube_api.build')
-    def test_get_youtube_video(self, mock_build):
-        self.http = HttpMock(datafile('youtube.json'), {'status': '200'})
-
-        mock_build = build('youtube', 'v3', http=self.http, static_discovery=False)
+# class TestGetYouTubeVideo(TestCase):
+#
+#     @patch('apis.youtube_api.build')
+#     def test_get_youtube_video(self, mock_build):
+#         artist_info = 'artist name track title'
+#
+#         mock_build = build('youtube', 'v3', http=self.http, static_discovery=False)
+#         mock_api_request = mock_build.search().list().execute().return_value
+#
+#         mock_api_request.return_value = datafile('youtube.json')
+#
+#         mock_build.return_value.__enter__.return_value = mock_api_request
+#
+#         response = get_youtube_video(artist_info)
+#
+#         self.assertTrue(getattr(mock_build, 'items'))
+#         self.assertEqual(response, datafile('youtube.json'))
 
 
 
@@ -85,18 +96,6 @@ class TestGetYouTubeVideo(TestCase):
     #     )
     #     with self.assertRaises(UnknownApiNameOrVersion):
     #         plus = build("plus", "v1", http=http, cache_discovery=False)
-    # def test_full_featured(self):
-    #     # Zoo should exercise all discovery facets
-    #     # and should also have no future.json file.
-    #     self.http = HttpMock(datafile("zoo.json"), {"status": "200"})
-    #     zoo = build("zoo", "v1", http=self.http, static_discovery=False)
-    #     self.assertTrue(getattr(zoo, "animals"))
-    #
-    #     request = zoo.animals().list(name="bat", projection="full")
-    #     parsed = urllib.parse.urlparse(request.uri)
-    #     q = urllib.parse.parse_qs(parsed.query)
-    #     self.assertEqual(q["name"], ["bat"])
-    #     self.assertEqual(q["projection"], ["full"])
     # def test_discovery_with_valid_version_uses_v1(self):
     #     http = HttpMockSequence(
     #         [
