@@ -16,7 +16,7 @@ load_dotenv()
 
 service_name = 'youtube'
 service_version = 'v3'
-api_key = os.environ.get('DEVELOPER_KEY')
+api_key = os.environ.get('YOUTUBE_API_KEY')
 
 
 def main(artist_info):

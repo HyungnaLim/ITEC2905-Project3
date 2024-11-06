@@ -12,6 +12,7 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 # https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions
+# app.secret_key = b'SESSION_KEY'
 app.secret_key = b'development_super_secret_key'
 
 
@@ -88,7 +89,7 @@ def artist(name):
     db_video = db.get_video(chosen_artist)
     db_events = db.get_events(chosen_artist)
 
-    return render_template('sample.html',
+    return render_template('saved_artist.html',
                            artist_name=name,
                            artist_img=chosen_artist.img_url,
                            artist_genres=genres,
