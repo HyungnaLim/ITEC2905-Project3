@@ -18,10 +18,27 @@ app.secret_key = b'development_super_secret_key'
 def homepage():
     return render_template('index.html')
 
+    """ This renders the homepage
+    
+    Returns:
+        The rendered HTML template on the homepage
+    """
+
 
 @app.route('/get_artist')
 def get_artist_info():
     # get user info from an API (figure out which one)
+
+    """Display information about the artist
+
+    Using the Spotify & Ticketmaster API's, this will retreive artist 
+    name from the parameters and on the search result page it will
+    render the results
+
+    Returns:
+        HTML's rendered template to serach for the artist or error page
+    """
+
     print('form data is', request.args)
 
     # this will read the artist that is being searched for
@@ -68,6 +85,19 @@ def get_artist_info():
 
 @app.route('/bookmark', methods=['GET', 'POST'])
 def bookmarks():
+
+    """This will handle bookmarks for artist actions
+
+    For the POST requests
+    it will render a sample artist page only if the sample page is requested
+    it will render a list of saved artists only if saved artists is requested
+
+    Returns:
+        This will render the HTML template for both sample artist page or 
+        the saved artist 
+    
+    """
+
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
             sample = placeholder()
@@ -90,6 +120,16 @@ def bookmarks():
 
 @app.route('/save_search', methods=['POST'])
 def save_artist():
+
+    """This will save the current artist search to the database
+
+    Stores the result of what was searched in the database of that session
+
+    Return:
+        This will redirect back to thee saved artist's detail page 
+    """
+
+
     artist_to_save = session.get('user_search')
     db.store_artist_data(artist_to_save)
     flash(f'{artist_to_save['artist_name']} saved!')
@@ -98,6 +138,17 @@ def save_artist():
 
 @app.route('/artist/<name>')
 def artist(name):
+
+    """Display the saved artist information
+
+    Will retrieve a saved artist in the database along with their genre, tracks,
+    videos and events
+
+    Returns:
+        Rendered HTML template with artist information
+    
+    """
+
     chosen_artist = Artist.get(Artist.name == name)
     genres = db.get_genres(chosen_artist)
     tracks = db.get_tracks(chosen_artist)
@@ -116,6 +167,18 @@ def artist(name):
 
 
 def data_constructor(artist_info, event, music_video):
+
+    """Artist data into a dictionary for storage
+
+    Artist data rerieved from Spotify API
+    Event data retrieved from Ticketmaster API
+    Video data retrieved from YouTube API
+
+    Returns:
+        dictionary containing artist data
+    
+    """
+
     results = {
         'artist_name': artist_info.artist,
         'artist_img_url': artist_info.image_url,
