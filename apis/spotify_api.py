@@ -15,7 +15,7 @@ def get_token():
     # get environment variables for client credentials from OS
     client_id = os.environ.get('SPOTIFY_ID')
     client_secret = os.environ.get('SPOTIFY_SECRET')
-    if not client_id or not client_secret:
+    if client_id is None or client_secret is None:
         raise Exception('could not find environment variables, check your OS environment variables')
 
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
