@@ -12,7 +12,7 @@ import logging
 name_version_index = 'https://github.com/googleapis/google-api-python-client/blob/main/docs/dyn/index.md#youtube'
 service_name = 'youtube'
 service_version = 'v3'
-# api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
+# api_key = os.environ.get('YOUTUBE_API_KEY')   # insert api key into DEVELOPER_KEY env variable
 
 
 def main(search_term):

@@ -7,53 +7,31 @@
 
 ---
 
-## Environment Variables
-
-### Spotify:
-- Create Spotify account and login to <a ref="https://developer.spotify.com/dashboard">developer site</a>.
-- Follow instruction from <a ref="https://developer.spotify.com/documentation/web-api/tutorials/getting-started#create-an-app"> API documentation</a> to see your Client ID and Client secret.
-- Add the following environment variables to your operating system:
-- **SPOTIFY_ID** : Your client ID
-- **SPOTIFY_SECRET** : Your client secret (click 'View client secret')
-
-### Youtube:
-
-### Ticketmaster:
-
-
----
-
 ## To install and run
 
-### Windows:
-1. Create a virtual environment:
-`python -m venv venv`
-2. Activate the virtual environment:
-`venv\Scripts\Activate`
-3. Install required packages:
-`pip install -r requirements.txt`
-4. Set flask app
-`set FLASK_APP=app.py`
-`set FLASK_DEBUG=1`
-5. Run the application:
-`flask run`
-6. App will be running on http://127.0.0.1:5000
+1. Set environment variables:
 
+   - Spotify:
+     - Create Spotify account and login to <a ref="https://developer.spotify.com/dashboard">developer site</a>.
+     - Follow instruction from <a ref="https://developer.spotify.com/documentation/web-api/tutorials/getting-started#create-an-app"> API documentation</a> to see your Client ID and Client secret.
+     - Add the following environment variables to your operating system:
+     - **SPOTIFY_ID** : Your client ID
+     - **SPOTIFY_SECRET** : Your client secret (click 'View client secret')
 
-### Mac/Linux:
-1. Create a virtual environment:
-`python -m venv venv`
-2. Activate the virtual environment:
-`source venv/bin/activate`
-3. Install required packages:
-`pip install -r requirements.txt``
-4. Set flask app
-`export FLASK_APP=app.py`
-`export FLASK_DEBUG=1`
-5. Run the application:
-`flask run`
-(if not working try: `python app.py`)
-6. App will be running on http://127.0.0.1:5000
+   - Youtube:
+     - Create a YouTube account and a <a ref="https://developers.google.com/youtube/registering_an_application">YouTube API key</a>.
+     - Create an environment variable named YOUTUBE_API_KEY which will hold your key.
+
+   - Ticketmaster:
+
+   - Flask:
+     - Create a secret key `python -c 'import secrets; print(secrets.token_hex())'`
+     - Add the generated key to an environment variable named SESSION_KEY
+
+2. Create and activate a virtual environment
+3. Install required packages - `pip install -r requirements.txt`
+4. Run the application - `python app.py`
+5. App will be running on http://127.0.0.1:5000
 
 ---
 
