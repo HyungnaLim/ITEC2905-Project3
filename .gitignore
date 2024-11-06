@@ -3,4 +3,5 @@ __pycache__/
 apis/__pycache__/
 apitestvenv/
 venv/
+search_results_db.sqlite
 .env
