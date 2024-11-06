@@ -16,13 +16,14 @@ app.secret_key = b'development_super_secret_key'
 
 @app.route('/') # home page
 def homepage():
-    return render_template('index.html')
 
     """ This renders the homepage
     
     Returns:
         The rendered HTML template on the homepage
     """
+    return render_template('index.html')
+
 
 
 @app.route('/get_artist')
