@@ -3,17 +3,17 @@ import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
 import database.search_results_db as db
-from apis.youtube_api import YoutubeError
 from database.sample_artist import placeholder
 from database.search_results_db import Artist
 import logging
+from dotenv import load_dotenv
+load_dotenv()
 
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 # https://flask.palletsprojects.com/en/3.0.x/quickstart/#sessions
-# app.secret_key = b'SESSION_KEY'
-app.secret_key = b'development_super_secret_key'
+app.secret_key = b'SESSION_KEY'
 
 
 @app.route('/')

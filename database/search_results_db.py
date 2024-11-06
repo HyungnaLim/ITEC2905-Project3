@@ -15,7 +15,7 @@ class BaseModel(Model):
 
 class Artist(BaseModel):
     name = CharField(unique=True)
-    img_url = CharField()
+    img_url = CharField(null=True)
     date_created = DateTimeField()
 
     def __str__(self):
@@ -31,9 +31,9 @@ class Artist(BaseModel):
 
 class Track(BaseModel):
     title = CharField(unique=True)
-    album = CharField()
-    release_date = CharField()
-    spotify_url = CharField()
+    album = CharField(null=True)
+    release_date = CharField(null=True)
+    spotify_url = CharField(null=True)
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='tracks')
 
@@ -143,26 +143,29 @@ def store_track_info(artist, spotify_data):
 
 
 def store_genres(artist, spotify_data):
-    for genre in spotify_data['artist_genre']:
-        genre_row, created = Genre.get_or_create(
-            genre_name=genre,
-            defaults={'date_created': datetime.now(),
-                      'artist': artist}
-        )
-        try:
-            with db.atomic():
-                Relationship.create(
-                    from_artist=spotify_data['artist_name'],
-                    to_genre=genre)
-            print(f'{genre} relationship created.')
-        except IntegrityError:
-            print(f'{genre} relationship passed.')
-            pass
+    if spotify_data['artist_genre']:
+        for genre in spotify_data['artist_genre']:
+            genre_row, created = Genre.get_or_create(
+                genre_name=genre,
+                defaults={'date_created': datetime.now(),
+                          'artist': artist}
+            )
+            try:
+                with db.atomic():
+                    Relationship.create(
+                        from_artist=spotify_data['artist_name'],
+                        to_genre=genre)
+                print(f'{genre} relationship created.')
+            except IntegrityError:
+                print(f'{genre} relationship passed.')
+                pass
 
-        if created:
-            print(f'Genre: {genre} saved!')
-        else:
-            print(f'Genre: {genre} already in database.')
+            if created:
+                print(f'Genre: {genre} saved!')
+            else:
+                print(f'Genre: {genre} already in database.')
+    else:
+        pass
 
 
 def store_events_info(artist, artist_data):
