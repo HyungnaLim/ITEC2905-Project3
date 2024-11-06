@@ -51,12 +51,14 @@ class Genre(BaseModel):
 
 
 class Event(BaseModel):
-    name = CharField(unique=True, null=True)
+    name = CharField(null=True)
+    date = CharField(null=True)
+    venue = CharField(null=True)
     date_created = DateTimeField()
     artist = ForeignKeyField(Artist, backref='events')
 
     def __str__(self):
-        return f'{self.name}, {self.date_created}'
+        return f'{self.name}, {self.date}, {self.venue}, {self.date_created}'
 
 
 class Video(BaseModel):
@@ -163,38 +165,27 @@ def store_genres(artist, spotify_data):
             print(f'Genre: {genre} already in database.')
 
 
-def store_events_info(artist, events):
-    try:
-        name, created = Event.get_or_create(
-            name=events['event'],
-            defaults={
-                'date_created': datetime.now(),
-                'artist': artist
-            }
-        )
-        if created:
-            print(f'Event: {name} saved!')
-        else:
-            print(f'Event: {name} already in database.')
+def store_events_info(artist, artist_data):
+    for e in artist_data['events']:
+        try:
+            name, created = Event.get_or_create(
+                name=e['event'],
+                date=e['date'],
+                venue=e['venue'],
+                defaults={
+                    # 'date': e['date'],
+                    # 'venue': e['venue'],
+                    'date_created': datetime.now(),
+                    'artist': artist
+                }
+            )
+            if created:
+                print(f'Event: {name} saved!')
+            else:
+                print(f'Event: {name} already in database.')
 
-    except Exception as error:
-        print(f'Error saving events to database: {error}')
-    # try:
-    #     for event in events['event']:
-    #         name, created = Event.get_or_create(
-    #             name=event,
-    #             defaults={
-    #                 'date_created': datetime.now(),
-    #                 'artist': artist
-    #             }
-    #         )
-    #         if created:
-    #             print(f'Event: {name} saved!')
-    #         else:
-    #             print(f'Event: {name} already in database.')
-    #
-    # except Exception as error:
-    #     print(f'Error saving events to database: {error}')
+        except Exception as error:
+            print(f'Error saving events to database: {error}')
 
 
 def store_music_video_info(artist, video):
@@ -256,16 +247,12 @@ def get_genres(artist):
 def get_events(artist):
     events = []
     for event in artist.events:
-        events.append(event.name)
-        # e = {
-        #     'event': event.name
-        # }
-        # e = {
-        #     'event_name': event.name,
-        #     'event_date': event.event_date,
-        #     'event_venue': event.venue
-        # }
-        # events.append(e)
+        x = {
+            'name': event.name,
+            'date': event.date,
+            'venue': event.venue,
+        }
+        events.append(x)
     return events
 
 

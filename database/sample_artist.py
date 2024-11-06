@@ -24,9 +24,19 @@ def placeholder():
                 }
             ],
             'event': [
-                'Sample 1: Rick Astley Live, 2025-01-01, First Avenue',
-                'Sample 2: Rick Astley Live, 2025-01-01, First Avenue',
-                'Sample 3: Rick Astley Live, 2025-01-01, First Avenue'
+                {
+                    'name': 'Sample 1: Rick Astley Live',
+                    'date': '2025-01-01',
+                    'venue': 'First Avenue',
+                },{
+                    'name': 'Sample 2: Rick Astley Live',
+                    'date': '2025-01-01',
+                    'venue': 'First Avenue',
+                },{
+                    'name': 'Sample 3: Rick Astley Live',
+                    'date': '2025-01-01',
+                    'venue': 'First Avenue',
+                },
             ],
             'video_title': 'Rick Astley - Never Gonna Give You Up (Official Music Video)',
             'video_id': 'dQw4w9WgXcQ',
