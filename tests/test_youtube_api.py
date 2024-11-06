@@ -1,8 +1,9 @@
 import os
+import json
 import unittest
 from unittest import TestCase
 from unittest.mock import patch
-from apis.youtube_api import main, YoutubeError, get_youtube_video, response_data_extraction, service_name
+from apis.youtube_api import main, YoutubeError, get_youtube_video, response_data_extraction
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
 from googleapiclient.http import HttpMock
@@ -84,65 +85,52 @@ class TestMain(TestCase):
 #
 #         self.assertTrue(getattr(mock_build, 'items'))
 #         self.assertEqual(response, datafile('youtube.json'))
-
-
-
-    # def test_unknown_api_name_or_version(self):
-    #     http = HttpMockSequence(
-    #         [
-    #             ({"status": "404"}, read_datafile("zoo.json", "rb")),
-    #             ({"status": "404"}, read_datafile("zoo.json", "rb")),
-    #         ]
-    #     )
-    #     with self.assertRaises(UnknownApiNameOrVersion):
-    #         plus = build("plus", "v1", http=http, cache_discovery=False)
-    # def test_discovery_with_valid_version_uses_v1(self):
-    #     http = HttpMockSequence(
-    #         [
-    #             ({"status": "200"}, read_datafile("zoo.json", "rb")),
-    #         ]
-    #     )
-    #     build(
-    #         "zoo",
-    #         version="v123",
-    #         http=http,
-    #         cache_discovery=False,
-    #         static_discovery=False,
-    #     )
-    #     validate_discovery_requests(self, http, "zoo", "v123", V1_DISCOVERY_URI)
-    #     artist_info = 'artist name track title'
-    #     # credentials = { service_name: 'youtube', service_version: 'v3', api_key: '123' }
-    #     #
-    #     # mock_api_request = mock_service.search().list().execute().return_value
-    #     mock_api_request.return_value = {
-    #         'items': [
-    #             {
-    #                 'snippet': {
-    #                     'title': 'video title',
-    #                     'thumbnails': { 'high': { 'url': 'thumb_url' }},
-    #                 'id': { 'videoId': 'video_id' }}
-    #             }
-    #         ]
-    #     }
+    # credentials = { service_name: 'youtube', service_version: 'v3', api_key: '123' }
     #
-    #     mock_build.return_value.__enter__.return_value = mock_service
-    #
-    #     response = get_youtube_video(artist_info)
-    #
-    #     self.assertEqual(response, {
-    #         'items': [
-    #             {
-    #                 'snippet': {
-    #                     'title': 'video title',
-    #                     'thumbnails': { 'high': { 'url': 'thumb_url' }},
-    #                 'id': { 'videoId': 'video_id' }}
-    #             }
-    #         ]
-    #     })
-    #
-    #     mock_build.assert_called_once_with(mock_service)
+    # mock_api_request = mock_service.search().list().execute().return_value
+#     mock_api_request.return_value = read_datafile('youtube.json')
+#
+#     mock_build.return_value.__enter__.return_value = mock_service
+#
+#     response = get_youtube_video(artist_info)
+#
+#     self.assertEqual(response, {
+#         'items': [
+#             {
+#                 'snippet': {
+#                     'title': 'video title',
+#                     'thumbnails': { 'high': { 'url': 'thumb_url' }},
+#                 'id': { 'videoId': 'video_id' }}
+#             }
+#         ]
+#     })
+#
+#     mock_build.assert_called_once_with(mock_service)
 
 
+class TestResponseDataExtraction(TestCase):
+
+    def test_correct_data_from_response_data_extraction(self):
+        api_response_data = json.loads(read_datafile('youtube.json'))
+
+        expected_result = {
+            'video_title': 'video title',
+            'video_id': 'video id',
+            'thumbnail': 'thumb url'
+        }
+
+        actual_response = response_data_extraction(api_response_data)
+        self.assertEqual(actual_response, expected_result)
+
+
+    def test_key_error_from_response_data_extraction(self):
+        # JSON where ID value is deleted
+        api_response_data_missing_id = json.loads(read_datafile('no_id_youtube.json'))
+
+        with self.assertRaises(YoutubeError) as context:
+            response_data_extraction(api_response_data_missing_id)
+
+        self.assertIn('YouTube data extraction error:', f'{context.exception}')
 
 
 if __name__ == '__main__':
