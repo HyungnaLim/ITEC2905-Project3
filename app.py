@@ -72,8 +72,6 @@ def bookmarks():
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
             sample = placeholder()
-            print(sample['event'])
-            # TODO sample.html can (should) be changed to search_results.html - avoid duplication
             return render_template('sample.html',
                                    artist_name=sample['artist_name'],
                                    artist_img=sample['artist_img_url'],
@@ -105,7 +103,7 @@ def artist(name):
     db_video = db.get_video(chosen_artist)
     db_events = db.get_events(chosen_artist)
 
-    return render_template('sample.html',
+    return render_template('saved_artist.html',
                            artist_name=name,
                            artist_img=chosen_artist.img_url,
                            artist_genres=genres,
@@ -117,17 +115,28 @@ def artist(name):
 
 
 def data_constructor(artist_info, event, music_video):
+    events_li = []
+    for e in event:
+        x = {
+            'event': e.name,
+            'date': e.date,
+            'venue': e.venue,
+        }
+        events_li.append(x)
+    print(events_li)
+
     results = {
         'artist_name': artist_info.artist,
         'artist_img_url': artist_info.image_url,
         'artist_genre': artist_info.genres,
         'tracks': artist_info.tracks,
-        'event': f'{event}',
+        'events': events_li,
         'video_title': music_video['video_title'],
         'video_id': music_video['video_id'],
         'video_thumbnail': music_video['thumbnail']
     }
     return results
+
 
 
 if __name__ == '__main__':
