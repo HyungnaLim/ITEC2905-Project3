@@ -68,44 +68,7 @@ class TestMain(TestCase):
         mock_extract.assert_not_called()
 
 
-# class TestGetYouTubeVideo(TestCase):
-#
-#     @patch('apis.youtube_api.build')
-#     def test_get_youtube_video(self, mock_build):
-#         artist_info = 'artist name track title'
-#
-#         mock_build = build('youtube', 'v3', http=self.http, static_discovery=False)
-#         mock_api_request = mock_build.search().list().execute().return_value
-#
-#         mock_api_request.return_value = datafile('youtube.json')
-#
-#         mock_build.return_value.__enter__.return_value = mock_api_request
-#
-#         response = get_youtube_video(artist_info)
-#
-#         self.assertTrue(getattr(mock_build, 'items'))
-#         self.assertEqual(response, datafile('youtube.json'))
-    # credentials = { service_name: 'youtube', service_version: 'v3', api_key: '123' }
-    #
-    # mock_api_request = mock_service.search().list().execute().return_value
-#     mock_api_request.return_value = read_datafile('youtube.json')
-#
-#     mock_build.return_value.__enter__.return_value = mock_service
-#
-#     response = get_youtube_video(artist_info)
-#
-#     self.assertEqual(response, {
-#         'items': [
-#             {
-#                 'snippet': {
-#                     'title': 'video title',
-#                     'thumbnails': { 'high': { 'url': 'thumb_url' }},
-#                 'id': { 'videoId': 'video_id' }}
-#             }
-#         ]
-#     })
-#
-#     mock_build.assert_called_once_with(mock_service)
+# TODO test get_youtube_video()
 
 
 class TestResponseDataExtraction(TestCase):
