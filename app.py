@@ -3,6 +3,7 @@ import apis.spotify_api as spotify
 import apis.youtube_api as video
 import apis.ticketmaster_api as events
 import database.search_results_db as db
+from apis.youtube_api import YoutubeError
 from database.sample_artist import placeholder
 from database.search_results_db import Artist
 import logging
@@ -14,38 +15,24 @@ logger = logging.getLogger(__name__)
 app.secret_key = b'development_super_secret_key'
 
 
-@app.route('/') # home page
+@app.route('/')
 def homepage():
     return render_template('index.html')
 
 
 @app.route('/get_artist')
 def get_artist_info():
-    # get user info from an API (figure out which one)
-    print('form data is', request.args)
-
-    # this will read the artist that is being searched for
-    artist_name = request.args.get('user_search_query')
-
     try:
+        artist_name = request.args.get('user_search_query')
         artist_info, spotify_error = spotify.main(artist_name)
         if spotify_error:
-            return render_template('error.html', message=spotify_error)
+            raise Exception(spotify_error)
 
-        # events_info = events.main(artist_info.artist)
-        events_info, error_message = events.main(artist_info.artist)
-        if error_message:
-            return render_template('error.html', message=error_message)
-
-        # api return format: (api_data, None)
+        events_info, event_error_message = events.main(artist_info.artist)
         music_video, youtube_error_message = video.main(f'{artist_info.artist} {artist_info.tracks[0]['title']}')
+        error_logging([event_error_message, youtube_error_message])
 
-        # first if-clause will trigger if api returns (None, error_message)
-        if youtube_error_message:
-            return render_template('error.html', message=error_message)
-
-        results = data_constructor(artist_info, events_info, music_video)
-        session['user_search'] = results
+        create_session(artist_info, events_info, music_video)
 
         if artist_name.lower() != artist_info.artist.lower():
             flash('Displaying closest match to search term')
@@ -60,10 +47,9 @@ def get_artist_info():
                                music_video=music_video,
                                events_info=events_info)
 
-
     except Exception as e:
         logger.exception(e)
-        return render_template('error.html', message=f'An unexpected error occurred: {e}')
+        return render_template('error.html', message=f'An app error occurred: {e}')
 
 
 @app.route('/bookmark', methods=['GET', 'POST'])
@@ -71,8 +57,6 @@ def bookmarks():
     if request.method == 'POST':
         if request.form.get('action') == "Sample Page":
             sample = placeholder()
-            print(sample['event'])
-            # TODO sample.html can (should) be changed to search_results.html - avoid duplication
             return render_template('sample.html',
                                    artist_name=sample['artist_name'],
                                    artist_img=sample['artist_img_url'],
@@ -115,18 +99,71 @@ def artist(name):
                            events=db_events)
 
 
+def create_session(artist_session, event_session, video_session):
+    results = data_constructor(artist_session, event_session, video_session)
+    session['user_search'] = results
+
+
 def data_constructor(artist_info, event, music_video):
-    results = {
-        'artist_name': artist_info.artist,
-        'artist_img_url': artist_info.image_url,
-        'artist_genre': artist_info.genres,
-        'tracks': artist_info.tracks,
-        'event': f'{event}',
-        'video_title': music_video['video_title'],
-        'video_id': music_video['video_id'],
-        'video_thumbnail': music_video['thumbnail']
-    }
-    return results
+    if event:
+        events_li = []
+        for e in event:
+            x = {
+                'event': e.name,
+                'date': e.date,
+                'venue': e.venue,
+            }
+            events_li.append(x)
+
+        if music_video:
+            results = {
+                'artist_name': artist_info.artist,
+                'artist_img_url': artist_info.image_url,
+                'artist_genre': artist_info.genres,
+                'tracks': artist_info.tracks,
+                'events': events_li,
+                'video_title': music_video['video_title'],
+                'video_id': music_video['video_id'],
+                'video_thumbnail': music_video['thumbnail']
+            }
+            return results
+
+        else:
+            results = {
+                'artist_name': artist_info.artist,
+                'artist_img_url': artist_info.image_url,
+                'artist_genre': artist_info.genres,
+                'tracks': artist_info.tracks,
+                'events': events_li
+            }
+            return results
+
+    elif music_video:
+        results = {
+            'artist_name': artist_info.artist,
+            'artist_img_url': artist_info.image_url,
+            'artist_genre': artist_info.genres,
+            'tracks': artist_info.tracks,
+            'video_title': music_video['video_title'],
+            'video_id': music_video['video_id'],
+            'video_thumbnail': music_video['thumbnail']
+        }
+        return results
+
+    else:
+        results = {
+            'artist_name': artist_info.artist,
+            'artist_img_url': artist_info.image_url,
+            'artist_genre': artist_info.genres,
+            'tracks': artist_info.tracks
+        }
+        return results
+
+
+def error_logging(messages):
+    for m in messages:
+        if m:
+            logger.error(m)
 
 
 if __name__ == '__main__':
