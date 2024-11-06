@@ -6,13 +6,15 @@ Requires valid API token to authenticate client. Returns data for video or error
 
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError, UnknownApiNameOrVersion
+from dotenv import load_dotenv
 import html
 import logging
-# import os
+import os
+load_dotenv()
 
 service_name = 'youtube'
 service_version = 'v3'
-# api_key = os.environ.get('DEVELOPER_KEY')   # insert api key into DEVELOPER_KEY env variable
+api_key = os.environ.get('DEVELOPER_KEY')
 
 
 def main(artist_info):
@@ -20,9 +22,17 @@ def main(artist_info):
 
     Pass search string to YouTube call, then pass response to extract music video data.
 
-    Return:
-         tuple of video data or error message. For example:
-         (video_data, None) or (None, error_message)
+    Returns:
+        tuple - A tuple containing either:
+        - (video_data, None) if successful, where video data is a dictionary.
+        - (None, error_message) if error raised, where error_message describes the error.
+
+    Example:
+        >main('The Beatles Here Comes The Sun')
+        return ({
+            'video_title': 'The Beatles - Here Comes The Sun (2019 Mix)',
+            'video_id': 'KQetemT1sWc',
+            'thumbnail': 'https://i.ytimg.com/vi/KQetemT1sWc/hqdefault.jpg'}, None)
     """
     try:
         response = get_youtube_video(artist_info)
